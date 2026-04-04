@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision 2030: Educational Affairs Goals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #eef2ff, #f8fafc, #ffffff);
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Strict adherence to max 7px border-radius */
+        .box-radius { border-radius: 7px !important; }
+        .box-radius-top { border-top-left-radius: 7px !important; border-top-right-radius: 7px !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;}
+        
+        /* Slide Transitions */
+        .slide-transition {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .slide-hidden {
+            opacity: 0;
+            transform: scale(0.98) translateY(15px);
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .slide-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Staggered Animations for List Items */
+        @keyframes fadeUpIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-card {
+            opacity: 0;
+            animation: fadeUpIn 0.6s ease forwards;
+        }
+        
+        /* CSS Background Patterns (No Images) */
+        .pattern-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        }
+        
+        /* Custom Text Gradient */
+        .text-gradient {
+            background: linear-gradient(135deg, #312e81, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col text-slate-800 antialiased bg-white">
+
+    <!-- Top Progress Bar -->
+    <div class="w-full bg-slate-200 h-1.5 shadow-inner z-20 relative">
+        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-blue-600 h-1.5 transition-all duration-500 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <!-- Full Screen Presentation Area -->
+    <main id="presentation-frame" class="flex-grow relative overflow-y-auto overflow-x-hidden pattern-grid">
+        
+        <!-- Slides will be injected here via JavaScript -->
+        <div id="slides-container" class="absolute inset-0">
+            <!-- Dynamic Content -->
+        </div>
+
+    </main>
+
+    <!-- Fixed Footer Controls -->
+    <footer class="bg-white/90 border-t border-slate-200/80 p-5 flex justify-between items-center backdrop-blur-md z-20 relative w-full shadow-[0_-4px_15px_rgba(0,0,0,0.02)]">
+        <div class="flex flex-col">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Vision 2030</span>
+            <span class="text-sm font-semibold text-indigo-700" id="slide-counter">Slide 1 of X</span>
+        </div>
+        <div class="flex gap-3">
+            <button id="btn-prev" class="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-semibold transition-all box-radius disabled:opacity-40 disabled:hover:bg-slate-50">
+                &larr; Back
+            </button>
+            <button id="btn-next" class="px-7 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all box-radius shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)]">
+                Next Step &rarr;
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const slideData = [
+            {
+                type: 'title',
+                title: "Vision 2030: Educational Affairs",
+                subtitle: "Strategic Goals for Jamiat-ul-Madina International Affairs",
+                description: "A comprehensive roadmap aiming towards <strong class='text-indigo-600'>educational excellence</strong>, <strong class='text-indigo-600'>global digitalization</strong>, and <strong class='text-indigo-600'>holistic development</strong> while preserving core Islamic values.",
+                highlightBox: "Transforming the future of Islamic Education globally by 2030."
+            },
+            {
+                type: 'content',
+                title: "1. Curriculum Enhancements",
+                description: "Tailoring the educational curriculum to meet regional demands while seamlessly integrating modern scientific knowledge.",
+                highlightTitle: "Core Focus",
+                highlightText: "Bridging the gap between traditional Islamic studies and <strong class='text-blue-900'>modern technical proficiencies</strong>.",
+                points: [
+                    { title: "Localized Syllabi", text: "Updating curricula to fulfill <strong class='text-slate-800'>regional and local demands</strong> effectively in all operating countries." },
+                    { title: "Modern Sciences", text: "Incorporating contemporary <strong class='text-slate-800'>scientific knowledge</strong> into the traditional framework." },
+                    { title: "Technical Skills", text: "Fostering <strong class='text-slate-800'>practical skills</strong> to prepare students for the modern professional world." }
+                ],
+                theme: "blue"
+            },
+            {
+                type: 'content',
+                title: "2. Educational Evaluation System",
+                description: "Establishing a strict, transparent, and continuous evaluation framework across all global branches.",
+                highlightTitle: "Quality Assurance",
+                highlightText: "Ensuring high standards through <strong class='text-emerald-900'>100% dedicated evaluators</strong> for every respective country.",
+                points: [
+                    { title: "Monthly Assessments", text: "Mandating rigorous <strong class='text-slate-800'>monthly educational reviews</strong>, utilizing physical and online platforms." },
+                    { title: "Dedicated Evaluators", text: "Appointing a <strong class='text-slate-800'>100% dedicated responsible</strong> for evaluations globally." },
+                    { title: "Modernized Framework", text: "Upgrading current methodologies to align closely with <strong class='text-slate-800'>modern educational standards</strong>." }
+                ],
+                theme: "emerald"
+            },
+            {
+                type: 'content',
+                title: "3. Training & Development",
+                description: "Empowering our educational staff and administrators worldwide through easily accessible training programs.",
+                highlightTitle: "Teacher Empowerment",
+                highlightText: "Fostering <strong class='text-indigo-900'>continuous professional growth</strong> to elevate teaching quality worldwide.",
+                points: [
+                    { title: "Global Online Training", text: "Launching comprehensive <strong class='text-slate-800'>online training & development</strong> programs globally." },
+                    { title: "Continuous Growth", text: "Focusing heavily on the continuous professional growth of <strong class='text-slate-800'>all educators</strong>." }
+                ],
+                theme: "indigo"
+            },
+            {
+                type: 'content',
+                title: "4. Digitalization Initiatives",
+                description: "Transforming the educational experience through smart infrastructure and interactive digital systems.",
+                highlightTitle: "The Digital Shift",
+                highlightText: "Creating a connected ecosystem via <strong class='text-violet-900'>Smart Classrooms & Dedicated Mobile Apps</strong>.",
+                points: [
+                    { title: "Smart Classrooms", text: "Establishing technologically advanced <strong class='text-slate-800'>smart classrooms</strong> globally." },
+                    { title: "Digital Libraries", text: "Ensuring the creation and maintenance of comprehensive <strong class='text-slate-800'>digital libraries</strong>." },
+                    { title: "Dedicated Mobile App", text: "Launching a centralized <strong class='text-slate-800'>mobile app</strong> for students and educators." },
+                    { title: "Guardian Feedback", text: "Creating a transparent <strong class='text-slate-800'>online feedback system</strong> for parents/guardians." }
+                ],
+                theme: "violet"
+            },
+            {
+                type: 'content',
+                title: "5. AI & Computer Education",
+                description: "Preparing the next generation for a tech-driven future by combining advanced tech with Islamic principles.",
+                highlightTitle: "Future-Ready Skills",
+                highlightText: "Mandating foundational tech education guided by <strong class='text-sky-900'>strict Islamic ethical boundaries</strong>.",
+                points: [
+                    { title: "Ethical AI Education", text: "Providing modern <strong class='text-slate-800'>Artificial Intelligence</strong> education within Islamic boundaries." },
+                    { title: "Global Computer Labs", text: "Setting up fully equipped <strong class='text-slate-800'>computer labs</strong> across all international branches." },
+                    { title: "Essential Tech Skills", text: "Making computer education a <strong class='text-slate-800'>mandatory core part</strong> of the learning journey." }
+                ],
+                theme: "sky"
+            },
+            {
+                type: 'content',
+                title: "6. Physical & Mental Well-being",
+                description: "Promoting a healthy lifestyle and ensuring the physical and mental vitality of our students.",
+                highlightTitle: "Holistic Health",
+                highlightText: "Focusing equally on <strong class='text-rose-900'>mental health and physical growth</strong> across campuses.",
+                points: [
+                    { title: "Structured Activities", text: "Launching structured and appropriate <strong class='text-slate-800'>physical education</strong> programs." },
+                    { title: "Holistic Development", text: "Ensuring complete development by addressing <strong class='text-slate-800'>mind and body</strong> together." }
+                ],
+                theme: "rose"
+            },
+            {
+                type: 'content',
+                title: "7. Academic Excellence Goals",
+                description: "Strengthening our academic foundation through enhanced resources, student support, and research.",
+                highlightTitle: "Advanced Academics",
+                highlightText: "Expanding <strong class='text-amber-900'>advanced specializations (Takhassusat)</strong> and international research publishing.",
+                points: [
+                    { title: "Physical Libraries", text: "Establishing rich <strong class='text-slate-800'>physical libraries</strong> alongside digital ones." },
+                    { title: "Student Counseling", text: "Providing dedicated <strong class='text-slate-800'>mental health & academic counseling</strong>." },
+                    { title: "Specializations", text: "Expanding advanced <strong class='text-slate-800'>specialization programs</strong> globally." },
+                    { title: "International Theses", text: "Publishing high-quality <strong class='text-slate-800'>student theses</strong> on international platforms." }
+                ],
+                theme: "amber"
+            },
+            {
+                type: 'content',
+                title: "8. Linguistic & Global Integration",
+                description: "Ensuring effective communication, strong leadership, and high standards through linguistic proficiency.",
+                highlightTitle: "Global Leaders",
+                highlightText: "Training exceptional individuals for <strong class='text-teal-900'>Imamat & Community Leadership</strong> worldwide.",
+                points: [
+                    { title: "Local Language Teaching", text: "Implementing 100% of teaching instructions in <strong class='text-slate-800'>regional languages</strong>." },
+                    { title: "Language Proficiency", text: "Standardizing spoken proficiency in both <strong class='text-slate-800'>Urdu and Arabic</strong>." },
+                    { title: "Leadership (Imamat)", text: "Identifying and training individuals to take on roles of <strong class='text-slate-800'>Imamat</strong>." },
+                    { title: "Global Oversight", text: "Conducting physical <strong class='text-slate-800'>oversight visits</strong> by educational heads globally." }
+                ],
+                theme: "teal"
+            },
+            {
+                type: 'ending',
+                title: "Thank You!",
+                subtitle: "Together, we will achieve Vision 2030",
+                description: "Jazakallah Khair for your dedication, time, and commitment to elevating Islamic Education globally."
+            }
+        ];
+
+        let currentSlide = 0;
+
+        function renderSlides() {
+            const container = document.getElementById('slides-container');
+            container.innerHTML = '';
+
+            slideData.forEach((slide, index) => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = `slide-transition w-full h-full p-8 md:p-12 flex flex-col justify-center ${index === 0 ? 'slide-visible' : 'slide-hidden'}`;
+                slideDiv.id = `slide-${index}`;
+
+                if (slide.type === 'title') {
+                    slideDiv.innerHTML = `
+                        <div class="max-w-4xl mx-auto text-center">
+                            <div class="inline-block px-4 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold tracking-widest text-sm uppercase box-radius mb-8 shadow-sm">
+                                Strategic Roadmap
+                            </div>
+                            <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
+                                <span class="text-gradient">Vision 2030:</span> <br /> Educational Affairs
+                            </h1>
+                            <p class="text-xl md:text-2xl font-semibold text-slate-600 mb-10 max-w-2xl mx-auto">${slide.subtitle}</p>
+                            
+                            <!-- Highlight Box for Title -->
+                            <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 p-8 max-w-3xl mx-auto box-radius shadow-xl shadow-indigo-900/5 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
+                                <p class="text-lg text-slate-700 leading-relaxed font-medium">${slide.description}</p>
+                                <div class="mt-6 pt-6 border-t border-slate-200">
+                                    <p class="text-xl font-bold text-indigo-800">${slide.highlightBox}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (slide.type === 'ending') {
+                    slideDiv.innerHTML = `
+                        <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center h-full">
+                            <div class="w-20 h-2 bg-indigo-600 mb-8 box-radius"></div>
+                            <h1 class="text-6xl md:text-8xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
+                                <span class="text-gradient">${slide.title}</span>
+                            </h1>
+                            <h2 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-8">${slide.subtitle}</h2>
+                            <div class="bg-white border border-slate-200 p-8 max-w-2xl mx-auto box-radius shadow-lg shadow-slate-200/50">
+                                <p class="text-xl text-slate-600 leading-relaxed">${slide.description}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const themeColors = {
+                        'blue': { bg: 'bg-blue-50', text: 'text-blue-900', border: 'border-blue-500', accent: 'bg-blue-600' },
+                        'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-900', border: 'border-emerald-500', accent: 'bg-emerald-600' },
+                        'indigo': { bg: 'bg-indigo-50', text: 'text-indigo-900', border: 'border-indigo-500', accent: 'bg-indigo-600' },
+                        'violet': { bg: 'bg-violet-50', text: 'text-violet-900', border: 'border-violet-500', accent: 'bg-violet-600' },
+                        'sky': { bg: 'bg-sky-50', text: 'text-sky-900', border: 'border-sky-500', accent: 'bg-sky-600' },
+                        'rose': { bg: 'bg-rose-50', text: 'text-rose-900', border: 'border-rose-500', accent: 'bg-rose-600' },
+                        'amber': { bg: 'bg-amber-50', text: 'text-amber-900', border: 'border-amber-500', accent: 'bg-amber-500' },
+                        'teal': { bg: 'bg-teal-50', text: 'text-teal-900', border: 'border-teal-500', accent: 'bg-teal-600' }
+                    };
+                    const t = themeColors[slide.theme];
+
+                    // Generate cards with stagger delays
+                    let pointsHTML = slide.points.map((p, i) => `
+                        <div class="bg-white border border-slate-200 p-5 box-radius shadow-[0_4px_15px_-5px_rgba(0,0,0,0.05)] hover:shadow-md hover:-translate-y-1 transition-all duration-300 animate-card border-l-4 ${t.border}" style="animation-delay: ${0.2 + (i * 0.1)}s">
+                            <h3 class="font-bold text-lg text-slate-800 mb-2">${p.title}</h3>
+                            <p class="text-slate-600 text-sm md:text-base leading-relaxed">${p.text}</p>
+                        </div>
+                    `).join('');
+
+                    slideDiv.innerHTML = `
+                        <div class="flex flex-col md:flex-row h-full gap-10 items-start">
+                            <!-- Left Column: Topic & Highlight -->
+                            <div class="w-full md:w-5/12 flex flex-col justify-center h-full">
+                                <div class="w-16 h-1.5 ${t.accent} mb-6 box-radius"></div>
+                                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">${slide.title}</h2>
+                                <p class="text-lg text-slate-600 mb-8 leading-relaxed">${slide.description}</p>
+                                
+                                <!-- Highlight Box -->
+                                <div class="${t.bg} border border-white/50 p-6 box-radius shadow-sm relative overflow-hidden animate-card" style="animation-delay: 0.1s">
+                                    <div class="absolute -right-6 -top-6 w-24 h-24 ${t.accent} opacity-5 rounded-full"></div>
+                                    <h4 class="text-xs uppercase tracking-widest font-bold ${t.text} opacity-70 mb-2">${slide.highlightTitle}</h4>
+                                    <p class="text-lg font-medium ${t.text} leading-snug">${slide.highlightText}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column: Points Grid -->
+                            <div class="w-full md:w-7/12 grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-max h-full content-center px-2">
+                                ${pointsHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                container.appendChild(slideDiv);
+            });
+            updateControls();
+        }
+
+        function updateControls() {
+            // Update buttons
+            document.getElementById('btn-prev').disabled = currentSlide === 0;
+            const isLast = currentSlide === slideData.length - 1;
+            const btnNext = document.getElementById('btn-next');
+            btnNext.disabled = isLast;
+            btnNext.innerHTML = isLast ? 'End of Slides' : 'Next Step &rarr;';
+            
+            // Update text
+            document.getElementById('slide-counter').innerText = `Slide ${currentSlide + 1} of ${slideData.length}`;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / slideData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Toggle visibility classes & re-trigger animations
+            slideData.forEach((_, index) => {
+                const el = document.getElementById(`slide-${index}`);
+                if (index === currentSlide) {
+                    el.classList.remove('slide-hidden');
+                    el.classList.add('slide-visible');
+                    // Reset animation for cards
+                    const cards = el.querySelectorAll('.animate-card');
+                    cards.forEach(card => {
+                        card.style.animation = 'none';
+                        card.offsetHeight; // trigger reflow
+                        card.style.animation = null; 
+                    });
+                } else {
+                    el.classList.remove('slide-visible');
+                    el.classList.add('slide-hidden');
+                }
+            });
+        }
+
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            if (currentSlide > 0) { currentSlide--; updateControls(); }
+        });
+
+        document.getElementById('btn-next').addEventListener('click', () => {
+            if (currentSlide < slideData.length - 1) { currentSlide++; updateControls(); }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (currentSlide < slideData.length - 1) { currentSlide++; updateControls(); }
+            } else if (e.key === 'ArrowLeft') {
+                if (currentSlide > 0) { currentSlide--; updateControls(); }
+            }
+        });
+
+        // Initialize
+        renderSlides();
+    </script>
+</body>
+</html>
