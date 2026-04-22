@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-10">
+
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+
+        <!-- Header -->
+        <!-- Header -->
+        <div class="bg-blue-900 p-6 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold">Sentiment Analysis Report</h1>
+                <p class="mt-2 opacity-80">Aggregated metrics from 20 files</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="openFlow('batch')"
+                    class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+                    Batch_Processing_Flow
+                </button>
+                <button onclick="openFlow('sentiment')"
+                    class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+                    Sentiment_Analysis_Flow
+                </button>
+            </div>
+        </div>
+
+        <!-- Text Extractor Section (New) -->
+        <div class="bg-gray-50 p-8 border-b border-gray-200">
+            <div class="w-full">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Text Extractor</h2>
+
+                <div class="mb-6">
+                    <span class="text-sm font-bold uppercase text-gray-500 tracking-wider">Model Name</span>
+                    <div class="mt-1 text-lg font-mono font-semibold text-blue-800">gemini-2.5-flash</div>
+                </div>
+
+                <div>
+                    <span class="text-sm font-bold uppercase text-gray-500 tracking-wider">Extraction Prompt</span>
+                    <div class="relative mt-2">
+                        <div id="extractor-prompt-text"
+                            class="bg-white text-black p-6 rounded-lg font-mono text-sm whitespace-pre-wrap leading-relaxed shadow-lg border border-gray-200">
+Analyze this document and extract ALL text and data into a structured JSON object.
+
+Rules:
+1. EXTRACT EVERY SINGLE PIECE OF TEXT found in the file. Do not miss any variable or text segment.
+2. Use the EXACT labels found in the document as JSON keys (e.g., "Bill To", "Order Date", "Total").
+3. If there is text that is important or present but does NOT have a specific label (unnamed variable), you MUST extract it using a key named "unnamed_key_n" where n is an incrementing number (e.g., "unnamed_key_1", "unnamed_key_2", etc.).
+4. Maintain the natural hierarchy of the document. Group related fields if it makes sense.
+5. For tables, represent them as a list of dictionaries.
+6. If a field has a label but NO value is present, set the value to a single space " ".
+7. Do not include any summary, markdown formatting, or explanation. Return ONLY the JSON object.</div>
+                        <button onclick="copyPrompt('extractor-prompt-text')"
+                            class="absolute top-2 right-2 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 px-3 py-1 rounded text-xs font-semibold border border-gray-300 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model & Prompt Section (Moved to Top) -->
+        <div class="bg-gray-50 p-8 border-b border-gray-200">
+            <div class="w-full">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Sentiment Analyser</h2>
+
+                <div class="mb-6">
+                    <span class="text-sm font-bold uppercase text-gray-500 tracking-wider">Model Name</span>
+                    <div class="mt-1 text-lg font-mono font-semibold text-blue-800">gpt-4o</div>
+                </div>
+
+                <div>
+                    <span class="text-sm font-bold uppercase text-gray-500 tracking-wider">Sentiment Analysis
+                        Prompt</span>
+                    <div class="relative mt-2">
+                        <div id="prompt-text"
+                            class="bg-white text-black p-6 rounded-lg font-mono text-sm whitespace-pre-wrap leading-relaxed shadow-lg border border-gray-200">
+Are these two JSON values semantically equivalent?
+Value A: [Ground Truth Value]
+Value B: [Extracted Value]
+
+Strictly reply with JSON: {"equivalent": true/false}
+Ignore minor typo, capitalization, date format, or data type differences.</div>
+                        <button onclick="copyPrompt('prompt-text')"
+                            class="absolute top-2 right-2 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 px-3 py-1 rounded text-xs font-semibold border border-gray-300 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="p-8">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-sm font-semibold text-gray-700 bg-gray-50 border-b border-gray-200">
+                        <th class="p-4">File Name</th>
+                        <th class="p-4">Human WER</th>
+                        <th class="p-4">Semantic WER</th>
+                        <th class="p-4">Matches <br><span class="text-xs font-normal text-gray-500">(Correct
+                                Facts)</span></th>
+                        <th class="p-4">Deletions <br><span class="text-xs font-normal text-gray-500">(Missing
+                                Data)</span></th>
+                        <th class="p-4">Substitutions <br><span
+                                class="text-xs font-normal text-gray-500">(Hallucinations)</span></th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/123_Gilkey_PO_19950/123_Gilkey_PO_19950_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">123_Gilkey_PO_19950</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">4.68%</td>
+                        <td class="p-4 font-bold text-blue-600">4.68%</td>
+                        <td class="p-4 text-green-600 font-semibold">387</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">19</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/130_Hoffer_Glass_PO_8159_yHipp9y/130_Hoffer_Glass_PO_8159_yHipp9y_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">130_Hoffer_Glass_PO_8159_yHipp9y</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">24</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/28_Elon_Sales_Order_SO17984-No1_2_2_G8knkUj/28_Elon_Sales_Order_SO17984-No1_2_2_G8knkUj_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">28_Elon_Sales_Order_SO17984-No1_2_2_G8knkUj</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">2.33%</td>
+                        <td class="p-4 text-green-600 font-semibold">42</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">1</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/29_AJ_Manufacturing_PO_043113_1_1_1_1_8KHwlGc/29_AJ_Manufacturing_PO_043113_1_1_1_1_8KHwlGc_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">29_AJ_Manufacturing_PO_043113_1_1_1_1_8KHwlGc</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">2.56%</td>
+                        <td class="p-4 text-green-600 font-semibold">77</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">1</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/33_iScreen_Shoter_-_Google_Chrome_-_250623180940_1/33_iScreen_Shoter_-_Google_Chrome_-_250623180940_1_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">33_iScreen_Shoter_-_Google_Chrome_-_250623180940_1</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">37</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/51_Apollo_Window_PO_YAN0819/51_Apollo_Window_PO_YAN0819_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">51_Apollo_Window_PO_YAN0819</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">22</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/53_Craftsmen_in_Wood_PO_129293/53_Craftsmen_in_Wood_PO_129293_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">53_Craftsmen_in_Wood_PO_129293</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">42</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/54_BSI-DOOR_HARDWARE_INC_PO_1959406/54_BSI-DOOR_HARDWARE_INC_PO_1959406_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">54_BSI-DOOR_HARDWARE_INC_PO_1959406</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">3.03%</td>
+                        <td class="p-4 text-green-600 font-semibold">65</td>
+                        <td class="p-4 text-red-600 font-semibold">1</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/64_Morfe_Windows_PO_2865/64_Morfe_Windows_PO_2865_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">64_Morfe_Windows_PO_2865</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">42</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/74_Pro_Window__Door_Inc._PO_49147/74_Pro_Window__Door_Inc._PO_49147_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">74_Pro_Window__Door_Inc._PO_49147</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">85</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/76_PullumWindow_PO44623-Stock/76_PullumWindow_PO44623-Stock_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">76_PullumWindow_PO44623-Stock</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">3.09%</td>
+                        <td class="p-4 font-bold text-blue-600">6.19%</td>
+                        <td class="p-4 text-green-600 font-semibold">93</td>
+                        <td class="p-4 text-red-600 font-semibold">1</td>
+                        <td class="p-4 text-yellow-600 font-semibold">3</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/77_Randall_Brothers_PO_372844/77_Randall_Brothers_PO_372844_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">77_Randall_Brothers_PO_372844</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">6.12%</td>
+                        <td class="p-4 text-green-600 font-semibold">47</td>
+                        <td class="p-4 text-red-600 font-semibold">2</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/92860/92860_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">92860</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.27%</td>
+                        <td class="p-4 font-bold text-blue-600">0.27%</td>
+                        <td class="p-4 text-green-600 font-semibold">736</td>
+                        <td class="p-4 text-red-600 font-semibold">1</td>
+                        <td class="p-4 text-yellow-600 font-semibold">1</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/CW02246-EVO/CW02246-EVO_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline"
+                                target="_blank">CW02246-EVO</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">112</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/EGS/EGS_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">EGS</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">47</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/LF/LF_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">LF</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">52</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/c1/c1_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">c1</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">4.76%</td>
+                        <td class="p-4 text-green-600 font-semibold">41</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">1</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/cpn/cpn_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">cpn</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">66</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/iScreen Shoter - Google Chrome - 260112153049/iScreen Shoter - Google Chrome - 260112153049_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">iScreen Shoter
+                                - Google Chrome - 260112153049</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">35</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/nat/nat_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">nat</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">115</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3244/3244_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3244</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">3.33%</td>
+                        <td class="p-4 font-bold text-blue-600">3.33%</td>
+                        <td class="p-4 text-green-600 font-semibold">29</td>
+                        <td class="p-4 text-red-600 font-semibold">1</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3245/3245_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3245</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">24</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3250/3250_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3250</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">4.55%</td>
+                        <td class="p-4 font-bold text-blue-600">4.55%</td>
+                        <td class="p-4 text-green-600 font-semibold">42</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">2</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3262/3262_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3262</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">2.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">49</td>
+                        <td class="p-4 text-red-600 font-semibold">1</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3269/3269_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3269</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">139</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3272/3272_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3272</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">187</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3278/3278_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3278</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">8.33%</td>
+                        <td class="p-4 text-green-600 font-semibold">33</td>
+                        <td class="p-4 text-red-600 font-semibold">2</td>
+                        <td class="p-4 text-yellow-600 font-semibold">1</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium text-gray-900">
+                            <a href="output/3280/3280_structural_report.html"
+                                class="text-blue-600 hover:text-blue-800 hover:underline" target="_blank">3280</a>
+                        </td>
+                        <td class="p-4 font-bold text-purple-600">0.00%</td>
+                        <td class="p-4 font-bold text-blue-600">0.00%</td>
+                        <td class="p-4 text-green-600 font-semibold">48</td>
+                        <td class="p-4 text-red-600 font-semibold">0</td>
+                        <td class="p-4 text-yellow-600 font-semibold">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Modal for Flows -->
+    <div id="flow-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 hidden justify-center items-center z-50 backdrop-blur-sm p-5">
+        <div id="flow-content" class="relative max-w-6xl max-h-screen overflow-auto">
+            <!-- Image content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        function copyPrompt(elementId) {
+            const promptText = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(promptText).then(() => {
+                alert('Prompt copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function openFlow(type) {
+            const modal = document.getElementById('flow-modal');
+            const content = document.getElementById('flow-content');
+            let imgSrc = '';
+
+            if (type === 'batch') {
+                imgSrc = 'Batch_Processing_Flow/Batch_Processing_Flow_png.png';
+            } else if (type === 'sentiment') {
+                imgSrc = 'Sentiment_Analysis_Flow/Sentiment_Analysis_Flow_png.png';
+            }
+
+            content.innerHTML = `<img src="${imgSrc}" class="max-w-full max-h-[85vh] h-auto rounded-lg shadow-lg" alt="Flow Diagram">`;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex'); // Ensure flex is added back for centering
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('flow-modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                this.classList.remove('flex');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

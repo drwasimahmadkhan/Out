@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jewelry CV Pipeline - Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            /* Violet for Royalty/Jewelry */
+            --secondary: #EC4899;
+            --success: #10B981;
+            --danger: #EF4444;
+            --bg-dark: #0F172A;
+            --card-bg: #1E293B;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* SVG Layer */
+        #connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Node Styling */
+        .node {
+            z-index: 10;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        }
+
+        .node-active {
+            /* ring-width: 2px; removed invalid property */
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+
+        .processing {
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        /* Packet Animation */
+        .packet {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #F472B6;
+            /* Pink packet */
+            border-radius: 50%;
+            box-shadow: 0 0 10px #F472B6;
+            z-index: 20;
+            display: none;
+        }
+
+        /* SVG Line Styles */
+        .connection-line {
+            fill: none;
+            stroke: #475569;
+            stroke-width: 2;
+            transition: stroke 0.3s ease;
+        }
+
+        .connection-line.active {
+            stroke: var(--secondary);
+            stroke-width: 3;
+            stroke-dasharray: 10;
+            animation: dash 1s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tech Stack Modal */
+        #tech-stack-modal.hidden {
+            display: none;
+        }
+
+        #tech-stack-modal.flex {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative selection:bg-pink-500 selection:text-white pt-24">
+
+    <!-- Navbar -->
+    <nav
+        class="fixed top-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-700 z-50 px-6 py-4 shadow-lg">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Brand -->
+            <div class="flex items-center gap-3 min-w-[200px]">
+                <div
+                    class="w-8 h-8 rounded bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div
+                    class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-500">
+                    JewelVision
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="simulateFlow('success')"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow font-medium transition flex items-center gap-2 text-sm">
+                    <i class="fas fa-play"></i> Simulate Success
+                </button>
+                <button onclick="simulateFlow('no_ring')"
+                    class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg shadow font-medium transition flex items-center gap-2 text-sm">
+                    <i class="fas fa-ban"></i> Simulate "No Ring"
+                </button>
+                <button onclick="simulateFlow('no_stone')"
+                    class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg shadow font-medium transition flex items-center gap-2 text-sm">
+                    <i class="fas fa-search-minus"></i> Simulate "No Stone"
+                </button>
+            </div>
+
+            <!-- Tech Stack Trigger -->
+            <div class="flex justify-end min-w-[200px]">
+                <button onclick="toggleTechStack()"
+                    class="text-slate-300 hover:text-white hover:bg-slate-800 font-medium transition flex items-center gap-2 border border-slate-700 px-4 py-2 rounded-lg bg-slate-800/50">
+                    <i class="fas fa-code text-pink-400"></i> Tech Stack
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tech Stack Modal -->
+    <div id="tech-stack-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="toggleTechStack()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 shadow-2xl rounded-2xl p-6 w-full max-w-lg mx-4">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-layer-group text-purple-500"></i> Pipeline Stack
+                </h3>
+                <button onclick="toggleTechStack()" class="text-slate-400 hover:text-white"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                <!-- Object Detection -->
+                <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 text-lg">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Ring Detection</div>
+                        <div class="font-medium text-slate-200">Roboflow Inference SDK</div>
+                    </div>
+                </div>
+                <!-- Background Removal -->
+                <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400 text-lg">
+                        <i class="fas fa-eraser"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Background Removal</div>
+                        <div class="font-medium text-slate-200">BiRefNet (Hugging Face)</div>
+                    </div>
+                </div>
+                <!-- Stone Detection -->
+                <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 text-lg">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Stone Analysis</div>
+                        <div class="font-medium text-slate-200">Ultralytics YOLOv8</div>
+                    </div>
+                </div>
+                <!-- Image Processing -->
+                <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 text-lg">
+                        <i class="fas fa-crop-alt"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Image Manipulation</div>
+                        <div class="font-medium text-slate-200">Python PIL (Pillow)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Grid -->
+    <div class="fixed inset-0 z-[-1] opacity-20"
+        style="background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <!-- SVG Layer for arrows -->
+    <svg id="connections"></svg>
+
+    <!-- Data Packet -->
+    <div id="packet" class="packet"></div>
+
+    <div class="container mx-auto px-4 py-10 min-h-screen flex flex-col items-center justify-center">
+
+        <header class="text-center mb-16 relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
+                Jewelry Retrieval Pipeline
+            </h1>
+            <p class="text-slate-400 max-w-2xl mx-auto">
+                High-precision Computer Vision pipeline for ring matching and stone detection utilizing BiRefNet and
+                YOLO.
+            </p>
+        </header>
+
+        <!-- Architecture Grid -->
+        <div
+            class="relative w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16 items-start place-items-center">
+
+            <!-- 1. Input Image -->
+            <div id="node-input"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-60 border-l-4 border-slate-400 md:col-start-2 md:row-start-1">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-slate-700 rounded-lg text-white">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Input Image</h3>
+                </div>
+                <img src="Example/1.input_image.jpg" alt="Input Example"
+                    class="w-full h-32 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <div class="text-sm text-slate-300">
+                    Raw image file from User.
+                    <div class="mt-2 text-xs bg-slate-800 p-1 rounded font-mono">/input/*.jpg</div>
+                </div>
+            </div>
+
+            <!-- 2. Ring Detection (Roboflow) -->
+            <div id="node-detect"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-purple-500 md:col-start-2 md:row-start-2">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-purple-500/20 rounded-lg text-purple-400">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Ring Detection</h3>
+                </div>
+                <img src="Example/2.ring_detection.png" alt="Detection Example"
+                    class="w-full h-32 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <div class="text-sm text-slate-300">
+                    <p class="mb-2">Model: <strong>my-first-project-y3ud8/3</strong></p>
+                    <a href="https://universe.roboflow.com/magentizaiteam/my-first-project-y3ud8/model" target="_blank"
+                        class="text-xs text-purple-400 hover:underline">View Model <i
+                            class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+            <!-- 2b. Ring Cropping (Roboflow) -->
+            <div id="node-crop"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-indigo-500 md:col-start-2 md:row-start-3">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-indigo-500/20 rounded-lg text-indigo-400">
+                        <i class="fas fa-crop"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Ring Cropping</h3>
+                </div>
+                <img src="Example/3.crop_image.jpg" alt="Crop Example"
+                    class="w-full h-32 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <div class="text-sm text-slate-300">
+                    <p class="mb-2">Model: <strong>ring-tzyly/1</strong></p>
+                    <p class="text-xs text-slate-400 mb-2">"Crop if found, else use original"</p>
+                    <a href="https://universe.roboflow.com/ring-snlwy/ring-tzyly/model/1" target="_blank"
+                        class="text-xs text-indigo-400 hover:underline">View Model <i
+                            class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+            <!-- 3. Background Removal (BiRefNet) -->
+
+            <div id="node-rembg"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-pink-500 md:col-start-2 md:row-start-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-pink-500/20 rounded-lg text-pink-400">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Background Removal Model</h3>
+                </div>
+                <img src="Example/4.remove_background.png" alt="Bg Removal Example"
+                    class="w-full h-32 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <div class="text-sm text-slate-300">
+                    <p class="mb-2 font-semibold">ZhengPeng7/BiRefNet</p>
+                    <p class="text-xs text-slate-400 mb-2">Removes background (Transparent)</p>
+                </div>
+                <div class="mt-2 text-xs bg-slate-800 p-1 rounded font-mono">/output/*_ring_no_bg.png</div>
+            </div>
+
+            <!-- 4. Stone Detection (YOLO) -->
+            <div id="node-stone"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-blue-500 md:col-start-2 md:row-start-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-blue-500/20 rounded-lg text-blue-400">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Stone Detect</h3>
+                </div>
+                <img src="Example/5.remove_stone.png" alt="Stone Detect Example"
+                    class="w-full h-32 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <div class="text-sm text-slate-300">
+                    Identifies stones and draws bounding boxes/masks.
+                    <div class="mt-2 text-xs bg-blue-900/30 border border-blue-700 px-2 py-1 rounded inline-block">
+                        YOLOv8 Custom</div>
+                </div>
+            </div>
+
+            <!-- 5. Remove Stone Folder -->
+            <div id="node-folder-remove"
+                class="node glass-panel p-4 rounded-xl shadow-xl w-48 border-l-4 border-green-500 md:col-start-2 md:row-start-6 flex flex-col items-center text-center">
+                <div class="text-green-400 text-2xl mb-2">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <h3 class="font-bold text-md">remove_stone</h3>
+                <p class="text-xs text-slate-400 mt-1">Stones masked/removed</p>
+            </div>
+
+            <!-- Row 2: Logic Branching -->
+
+            <!-- Error Node (Right of Detect) -->
+            <div id="node-error"
+                class="node glass-panel p-5 rounded-xl shadow-xl w-56 border-l-4 border-red-500 md:col-start-3 md:row-start-2 opacity-80">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-red-500/20 rounded-lg text-red-400">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <h3 class="font-bold">No Ring Found</h3>
+                </div>
+                <img src="Example/2.no_ring_detect.jpg" alt="No Ring Example"
+                    class="w-full h-24 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <p class="text-xs text-slate-300">Image is skipped. No processing.</p>
+            </div>
+
+            <!-- No Stone Node (Right of Stone Detect - Row 5) -->
+            <div id="node-no-stone"
+                class="node glass-panel p-5 rounded-xl shadow-xl w-56 border-l-4 border-orange-500 md:col-start-3 md:row-start-5 opacity-80">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-orange-500/20 rounded-lg text-orange-400">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h3 class="font-bold">No Stone Found</h3>
+                </div>
+                <img src="Example/5.no_stone_detect.png" alt="No Stone Example"
+                    class="w-full h-24 object-contain rounded-lg mb-2 border border-slate-700 bg-slate-900/50">
+                <p class="text-xs text-slate-300">Saved to /no_stone_detect folder.</p>
+            </div>
+
+            <!-- 6. Embedder (CLIP) -->
+            <div id="node-embed"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-teal-500 md:col-start-2 md:row-start-7">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-teal-500/20 rounded-lg text-teal-400">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Vectors</h3>
+                </div>
+                <div class="text-sm text-slate-300">
+                    <p class="mb-1">Generates CLIP embeddings.</p>
+                    <p class="text-xs text-slate-400">Uses FAISS Chromadb (Index)</p>
+                </div>
+                <div class="mt-2 text-xs bg-slate-800 p-1 rounded font-mono">rings.index, filenames.pkl</div>
+            </div>
+
+            <!-- 7. Search (Retrieval) -->
+            <div id="node-search"
+                class="node glass-panel p-6 rounded-xl shadow-xl w-64 border-l-4 border-cyan-500 md:col-start-2 md:row-start-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-3 bg-cyan-500/20 rounded-lg text-cyan-400">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Visual Search & Similar Detection</h3>
+                </div>
+                <p class="text-sm text-slate-300">
+                    Input Path -> Process -> Find Similar -> Return Top 10
+                </p>
+                <div class="mt-2 text-xs bg-slate-800 p-1 rounded font-mono">/result (10 images + original)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Tech Stack Modal Logic ---
+        function toggleTechStack() {
+            const modal = document.getElementById('tech-stack-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // --- SVG Drawing Logic ---
+        const svg = document.getElementById('connections');
+
+        function getCenter(element) {
+            const rect = element.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2 + window.scrollX,
+                y: rect.top + rect.height / 2 + window.scrollY,
+                top: rect.top + window.scrollY,
+                bottom: rect.bottom + window.scrollY,
+                left: rect.left + window.scrollX,
+                right: rect.right + window.scrollX
+            };
+        }
+
+        function createPath(id, startEl, endEl, type = 'straight') {
+            let path = document.getElementById(id);
+            if (!path) {
+                path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("id", id);
+                path.setAttribute("class", "connection-line");
+                path.setAttribute("marker-end", "url(#arrowhead)");
+                svg.appendChild(path);
+            }
+
+            const start = getCenter(startEl);
+            const end = getCenter(endEl);
+            let d = "";
+
+            if (type === 'straight') {
+                d = `M ${start.right} ${start.y} L ${end.left} ${end.y}`;
+            } else if (type === 'down') {
+                d = `M ${start.x} ${start.bottom} L ${end.x} ${end.top}`;
+            } else if (type === 'elbow-error') {
+                // Branch down from bottom of detect to error
+                d = `M ${start.x} ${start.bottom} L ${end.x} ${end.top}`;
+            }
+
+            path.setAttribute("d", d);
+            return path;
+        }
+
+        // Updated for Vertical Flow
+        function createConnection(id, startEl, endEl, type) {
+            const pathId = id;
+            let path = document.getElementById(pathId);
+            if (!path) {
+                path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("id", pathId);
+                path.setAttribute("class", "connection-line");
+                if (type !== 'hidden') {
+                    path.setAttribute("marker-end", "url(#arrowhead)");
+                }
+                svg.appendChild(path);
+            }
+
+            const start = getCenter(startEl);
+            const end = getCenter(endEl);
+            let d = "";
+
+            if (type === 'vertical') {
+                // Downward flow: Bottom of Start -> Top of End
+                d = `M ${start.x} ${start.bottom} L ${end.x} ${end.top}`;
+            } else if (type === 'horizontal') {
+                // Side flow: Right of Start -> Left of End
+                d = `M ${start.right} ${start.y} L ${end.left} ${end.y}`;
+            } else if (type === 'elbow-right') {
+                // Right then Down (not strictly needed with grid alignment but good to have)
+                const midX = (start.right + end.left) / 2;
+                d = `M ${start.right} ${start.y} L ${midX} ${start.y} L ${midX} ${end.y} L ${end.left} ${end.y}`;
+            }
+
+            path.setAttribute("d", d);
+            return path;
+        }
+
+        function createArrowMarker() {
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+            marker.setAttribute("id", "arrowhead");
+            marker.setAttribute("markerWidth", "10");
+            marker.setAttribute("markerHeight", "7");
+            marker.setAttribute("refX", "9");
+            marker.setAttribute("refY", "3.5");
+            marker.setAttribute("orient", "auto");
+
+            const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            polygon.setAttribute("points", "0 0, 10 3.5, 0 7");
+            polygon.setAttribute("fill", "#475569");
+
+            marker.appendChild(polygon);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+        }
+
+        function drawLines() {
+            const input = document.getElementById('node-input');
+            const detect = document.getElementById('node-detect');
+            const crop = document.getElementById('node-crop');
+            const rembg = document.getElementById('node-rembg');
+            const stone = document.getElementById('node-stone');
+            const folderRemove = document.getElementById('node-folder-remove');
+            const error = document.getElementById('node-error');
+            const noStone = document.getElementById('node-no-stone');
+            const embed = document.getElementById('node-embed');
+            const search = document.getElementById('node-search');
+
+            // 1. Input -> Detect (Vertical)
+            createConnection('path-1', input, detect, 'vertical');
+
+            // 2. Detect -> Crop (Vertical Success)
+            createConnection('path-2', detect, crop, 'vertical');
+
+            // Branch: Detect -> Error (Horizontal Failure)
+            createConnection('path-3', detect, error, 'horizontal');
+
+            // 3. Crop -> Rembg (Vertical)
+            createConnection('path-4', crop, rembg, 'vertical');
+
+            // 4. Rembg -> Stone (Vertical)
+            createConnection('path-5', rembg, stone, 'vertical');
+
+            // 5. Stone -> Folder (Vertical)
+            createConnection('path-6', stone, folderRemove, 'vertical');
+
+            // 6. Folder -> Embed (Vertical)
+            createConnection('path-7', folderRemove, embed, 'vertical');
+
+            // Branch: Stone -> No Stone (Horizontal Failure)
+            createConnection('path-8', stone, noStone, 'horizontal');
+
+            // 7. Embed -> Search (Vertical)
+            createConnection('path-9', embed, search, 'vertical');
+        }
+
+        // --- Animation Logic ---
+        const packet = document.getElementById('packet');
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        async function movePacket(pathId, duration = 800) {
+            const path = document.getElementById(pathId);
+            if (!path) return;
+            path.classList.add('active');
+
+            const len = path.getTotalLength();
+            packet.style.display = 'block';
+
+            const startTime = performance.now();
+            return new Promise(resolve => {
+                function animate(time) {
+                    let fraction = (time - startTime) / duration;
+                    if (fraction > 1) fraction = 1;
+                    const point = path.getPointAtLength(fraction * len);
+                    packet.style.left = (point.x - 6) + 'px';
+                    packet.style.top = (point.y - 6) + 'px';
+                    if (fraction < 1) requestAnimationFrame(animate);
+                    else {
+                        path.classList.remove('active');
+                        resolve();
+                    }
+                }
+                requestAnimationFrame(animate);
+            });
+        }
+
+        async function flashNode(nodeId, type = 'process') {
+            const node = document.getElementById(nodeId);
+            node.classList.add('node-active');
+            node.classList.add('processing');
+            if (type === 'error') node.style.borderColor = '#EF4444';
+            await sleep(600);
+            node.classList.remove('node-active');
+            node.classList.remove('processing');
+            node.style.borderColor = '';
+        }
+
+        let isAnimating = false;
+
+        async function simulateFlow(scenario) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            // Step 1: Input to Detect
+            // Step 1: Input to Detect
+            await flashNode('node-input');
+            await movePacket('path-1');
+            await flashNode('node-detect');
+            await sleep(200); // Wait for inference
+
+            if (scenario === 'no_ring') {
+                // Fail Flow
+                await movePacket('path-3');
+                await flashNode('node-error', 'error');
+            } else if (scenario === 'no_stone') {
+                // Success Flow: Detect -> Crop
+                await movePacket('path-2');
+                await flashNode('node-crop');
+                await sleep(200);
+
+                // Crop -> Rembg
+                await movePacket('path-4');
+                await flashNode('node-rembg');
+                await sleep(200);
+
+                // Rembg -> Stone Detect
+                await movePacket('path-5');
+                await flashNode('node-stone');
+                await sleep(200);
+
+                // Stone -> No Stone
+                await movePacket('path-8');
+                await flashNode('node-no-stone', 'error');
+
+            } else {
+                // Full Success Flow
+
+                // Detect -> Crop
+                await movePacket('path-2');
+                await flashNode('node-crop');
+                await sleep(200);
+
+                // Crop -> Rembg
+                await movePacket('path-4');
+                await flashNode('node-rembg');
+                await sleep(200);
+
+                // Rembg -> Stone
+                await movePacket('path-5');
+                await flashNode('node-stone');
+                await sleep(200);
+
+                // Stone -> Folder
+                await movePacket('path-6');
+                await flashNode('node-folder-remove');
+                await sleep(200);
+
+                // Folder -> Embed
+                await movePacket('path-7');
+                await flashNode('node-embed');
+                await sleep(200);
+
+                // Embed -> Search
+                await movePacket('path-9');
+                await flashNode('node-search');
+            }
+
+            packet.style.display = 'none';
+            isAnimating = false;
+        }
+
+        // Initial setup
+        window.addEventListener('load', () => {
+            createArrowMarker();
+            setTimeout(drawLines, 200);
+        });
+        window.addEventListener('resize', drawLines);
+    </script>
+</body>
+
+</html>
