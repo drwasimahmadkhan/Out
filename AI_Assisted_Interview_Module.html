@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artificial Intelligence Assisted Interview Module</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --accent: #1d4ed8;
+      --accent2: #0f766e;
+      --line: #cbd5e1;
+      --soft: #eff6ff
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: #e2e8f0;
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, sans-serif
+    }
+
+    .deck{width:100vw;height:100vh;overflow:hidden}
+.slide{display:none;width:100vw;height:100vh;padding:46px 62px 80px;background:linear-gradient(135deg,#ffffff 0%,#f8fafc 70%,#dbeafe 100%);position:relative;overflow-y:auto}
+
+    .slide.active {
+      display: block
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: 15px;
+      margin-bottom: 12px
+    }
+
+    .title {
+      font-size: 48px;
+      line-height: 1.06;
+      font-weight: 900;
+      margin: 0 0 16px;
+      color: #0f172a;
+      letter-spacing: -.03em
+    }
+
+    .subtitle {
+      font-size: 23px;
+      line-height: 1.45;
+      color: #475569;
+      max-width: 1080px
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px
+    }
+
+    .cols2 {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .cols3 {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .95);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, .08)
+    }
+
+    .card h3 {
+      font-size: 22px;
+      margin: 0 0 9px;
+      color: #0f172a
+    }
+
+    .card p,
+    .card li {
+      font-size: 18px;
+      line-height: 1.55;
+      color: #334155
+    }
+
+    .urdu {
+      font-family: "Noto Naskh Arabic", "Noto Nastaliq Urdu", "Segoe UI", Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      line-height: 1.8
+    }
+
+    .urdu h3 {
+      line-height: 1.5
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 22px
+    }
+
+    .urdu ul {
+      padding-left: 0;
+      padding-right: 24px
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 18px
+    }
+
+    .step {
+      background: #fff;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 165px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, .07);
+      position: relative
+    }
+
+    .step b {
+      display: block;
+      font-size: 16px;
+      color: #1d4ed8;
+      margin-bottom: 7px
+    }
+
+    .step span {
+      font-size: 16px;
+      line-height: 1.45;
+      color: #334155
+    }
+
+    .step .urdu {
+      font-size: 15px;
+      margin-top: 8px;
+      color: #334155
+    }
+
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -17px;
+      top: 58px;
+      font-size: 30px;
+      color: #0f766e;
+      font-weight: 900
+    }
+
+    .footer{position:absolute;bottom:22px;left:42px;right:42px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;color:#64748b;font-size:14px}
+.footer span{grid-column:1;text-align:left}
+.controls{position:fixed;bottom:18px;right:18px;z-index:20;display:flex;align-items:center;gap:8px}
+button{border:0;border-radius:999px;background:#0f172a;color:white;padding:10px 14px;font-size:16px;cursor:pointer;transition:background 0.2s}
+button:disabled{background:#94a3b8;cursor:not-allowed}
+#slideCounter{font-weight:bold;font-size:15px;color:#0f172a;padding:0 4px}
+.doc-btn{grid-column:2;justify-self:center;text-decoration:none;background:#0f172a;color:white;padding:6px 16px;border-radius:999px;font-size:14px;font-weight:600;transition:background 0.2s;white-space:nowrap}
+.doc-btn:hover{background:#334155}
+
+    .note {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      padding: 16px;
+      border-radius: 20px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: #7c2d12
+    }
+
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 18px;
+      line-height: 1.5;
+      color: #334155
+    }
+
+    .check:before {
+      content: "✓";
+      font-weight: 900;
+      color: #0f766e
+    }
+
+    @media (max-width: 1024px) {
+  .cols3 { grid-template-columns: repeat(2, 1fr); }
+  .flow { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .slide { padding: 24px 20px 80px; }
+  .cols2, .cols3, .flow { grid-template-columns: 1fr; }
+  .title { font-size: 32px; }
+  .subtitle { font-size: 18px; }
+  .step:not(:last-child)::after { content: "↓"; position: static; display: block; text-align: center; margin-top: 10px; margin-bottom: -10px; }
+  .footer { display: flex; flex-direction: column; position: static; margin-top: 40px; align-items: center; gap: 10px; text-align: center; }
+}
+@media print{.slide{display:block;page-break-after:always;height:auto}.controls{display:none}}
+  </style>
+</head>
+
+<body>
+  <div class="deck">
+
+    <section class="slide active">
+      <div class="kicker">Proposal</div>
+      <h1 class="title">Artificial Intelligence Assisted Interview Module</h1>
+      <div class="subtitle">A practical first phase to make recruitment tests and interviews more consistent,
+        reviewable, and time efficient.</div>
+      <div class="subtitle urdu" style="margin-top:10px">بھرتی کے ٹیسٹ اور انٹرویو کو منظم، قابلِ جائزہ اور کم وقت میں
+        مکمل کرنے کے لیے عملی پہلا مرحلہ۔</div>
+      <div style="margin-top:30px" class="grid cols3">
+        <div class="card">
+          <h3>Purpose</h3>
+          <p>Reduce repetitive first-level screening effort.</p>
+          <p class="urdu">ابتدائی دہرائے جانے والے کام کو کم کرنا۔</p>
+        </div>
+        <div class="card">
+          <h3>Scope</h3>
+          <p>Urdu interview, questions, recording, transcription, and report.</p>
+          <p class="urdu">اردو انٹرویو، سوالات، ریکارڈنگ، نقل نویسی اور رپورٹ۔</p>
+        </div>
+        <div class="card">
+          <h3>Control</h3>
+          <p>Final decision remains with Human Resources.</p>
+          <p class="urdu">حتمی فیصلہ انسانی وسائل کی ٹیم کے پاس رہے گا۔</p>
+        </div>
+      </div>
+      <div class="footer"><span>Artificial Intelligence Assisted Interview Module</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Problem</div>
+      <h2 class="title">Current Process Challenges</h2>
+      <div class="grid cols2">
+        <div class="card">
+          <h3>English</h3>
+          <ul>
+            <li>Repeated first-level questions consume Human Resources time.</li>
+            <li>Online tests need monitoring and recording.</li>
+            <li>Answers, audio, video, and evaluation are not always organized in one place.</li>
+          </ul>
+        </div>
+        <div class="card urdu">
+          <h3>اردو</h3>
+          <ul>
+            <li>ابتدائی سوالات بار بار لینے سے انسانی وسائل کا وقت لگتا ہے۔</li>
+            <li>آن لائن ٹیسٹ میں نگرانی اور ریکارڈنگ کی ضرورت ہوتی ہے۔</li>
+            <li>جوابات، آڈیو، ویڈیو اور جائزہ ہمیشہ ایک جگہ منظم نہیں ہوتے۔</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span>The need is time saving, consistency, and better review record.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Recommended Solution</div>
+      <h2 class="title">What the System Should Do</h2>
+      <div class="grid cols3">
+        <div class="card">
+          <h3>Interview</h3>
+          <p>Ask approved questions in Urdu.</p>
+          <p class="urdu">امیدوار سے اردو میں منظور شدہ سوالات پوچھے۔</p>
+        </div>
+        <div class="card">
+          <h3>Evaluate</h3>
+          <p>Check Multiple Choice Questions and evaluate short answers against approved content.</p>
+          <p class="urdu">کثیر الانتخابی سوالات چیک کرے اور مختصر جوابات کو منظور شدہ مواد سے ملائے۔</p>
+        </div>
+        <div class="card">
+          <h3>Report</h3>
+          <p>Prepare score, summary, transcript, observations, and recommendation for review.</p>
+          <p class="urdu">اسکور، خلاصہ، نقل، مشاہدات اور جائزے کے لیے سفارش بنائے۔</p>
+        </div>
+      </div>
+      <div class="note" style="margin-top:22px">The system supports decision-making; it should not make the final hiring
+        or rejection decision.</div>
+      <div class="footer"><span>Practical and controlled first phase</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Process Flow</div>
+      <h2 class="title">Simple Candidate Journey</h2>
+      <div class="flow">
+        <div class="step"><b>Step 1</b><span>Human Resources adds vacancy, questions, and content.</span>
+          <div class="urdu">انسانی وسائل آسامی، سوالات اور مواد شامل کرے۔</div>
+        </div>
+        <div class="step"><b>Step 2</b><span>Candidate receives a secure interview link.</span>
+          <div class="urdu">امیدوار کو محفوظ انٹرویو لنک ملے۔</div>
+        </div>
+        <div class="step"><b>Step 3</b><span>Candidate gives consent and checks camera and microphone.</span>
+          <div class="urdu">امیدوار اجازت دے اور کیمرہ و مائیکروفون چیک کرے۔</div>
+        </div>
+        <div class="step"><b>Step 4</b><span>System asks questions and records the session.</span>
+          <div class="urdu">نظام سوالات لے اور سیشن ریکارڈ کرے۔</div>
+        </div>
+        <div class="step"><b>Step 5</b><span>Human Resources reviews the report and decides.</span>
+          <div class="urdu">انسانی وسائل رپورٹ دیکھ کر فیصلہ کرے۔</div>
+        </div>
+      </div>
+      <div class="footer"><span>A small flow that can be built and tested first.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Phase One</div>
+      <h2 class="title">Doable Scope</h2>
+      <div class="grid cols2">
+        <div class="card">
+          <h3>Include</h3>
+          <ul>
+            <li>One or two selected roles</li>
+            <li>Urdu interview and test</li>
+            <li>Multiple Choice Questions and short answers</li>
+            <li>Audio and video recording</li>
+            <li>Transcript, score, and Human Resources report</li>
+          </ul>
+        </div>
+        <div class="card urdu">
+          <h3>شامل کریں</h3>
+          <ul>
+            <li>ایک یا دو منتخب منصب</li>
+            <li>اردو انٹرویو اور ٹیسٹ</li>
+            <li>کثیر الانتخابی اور مختصر سوالات</li>
+            <li>آڈیو اور ویڈیو ریکارڈنگ</li>
+            <li>نقل، اسکور اور انسانی وسائل کی رپورٹ</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span>Start small, measure results, then expand.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Human Review</div>
+      <h2 class="title">What Should Not Be Fully Automated</h2>
+      <div class="grid cols2">
+        <div class="card">
+          <ul>
+            <li>Final hiring or rejection decision</li>
+            <li>Final review of sensitive practical assessments</li>
+            <li>Final judgment on religious recitation or similar tasks</li>
+            <li>Automatic rejection based only on camera alerts</li>
+          </ul>
+        </div>
+        <div class="card urdu">
+          <ul>
+            <li>حتمی منظوری یا مسترد کرنے کا فیصلہ</li>
+            <li>حساس عملی جانچ کا آخری جائزہ</li>
+            <li>تلاوت یا اسی نوعیت کے کام کا حتمی فیصلہ</li>
+            <li>صرف کیمرہ الرٹ کی بنیاد پر خودکار مسترد کرنا</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span>Automation should assist, not replace responsible review.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Vendor Selection</div>
+      <h2 class="title">How to Evaluate a Vendor</h2>
+      <div class="grid cols2">
+        <div class="card">
+          <h3>Ask for a small working demonstration</h3>
+          <p>It should include one real role, sample questions, Urdu speech transcription, video recording, answer
+            evaluation, and a Human Resources report.</p>
+        </div>
+        <div class="card urdu">
+          <h3>چھوٹا عملی نمونہ لازمی لیں</h3>
+          <p>اس میں ایک حقیقی منصب، نمونہ سوالات، اردو نقل نویسی، ویڈیو ریکارڈنگ، جواب کی جانچ اور انسانی وسائل کی رپورٹ
+            شامل ہو۔</p>
+        </div>
+      </div>
+      <div class="note" style="margin-top:22px">Selection should be based on practical output, not only on presentation
+        claims.</div>
+      <div class="footer"><span>Demonstration first, selection later.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Next Steps</div>
+      <h2 class="title">Practical Way Forward</h2>
+      <div class="grid cols2">
+        <div class="card">
+          <div class="check">Select one pilot role.</div>
+          <div class="check">Prepare approved reference content.</div>
+          <div class="check">Finalize twenty to thirty questions.</div>
+          <div class="check">Run a small working demonstration.</div>
+          <div class="check">Compare the system report with manual review.</div>
+        </div>
+        <div class="card urdu">
+          <div class="check">ایک پائلٹ منصب منتخب کریں۔</div>
+          <div class="check">منظور شدہ حوالہ مواد تیار کریں۔</div>
+          <div class="check">بیس سے تیس سوالات فائنل کریں۔</div>
+          <div class="check">چھوٹا عملی نمونہ چلائیں۔</div>
+          <div class="check">نظام کی رپورٹ کا دستی جائزے سے موازنہ کریں۔</div>
+        </div>
+      </div>
+      <div class="footer"><span>Clear pilot, clear measurement, controlled expansion.</span><a href="https://view.officeapps.live.com/op/view.aspx?src=https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/AI_Assisted_Interview_Module.docx" target="_blank" class="doc-btn">Documentation</a></div>
+    </section>
+
+  </div>
+  <div class="controls">
+  <button onclick="prev()" id="prevBtn">‹</button>
+  <span id="slideCounter"></span>
+  <button onclick="next()" id="nextBtn">›</button>
+</div>
+  <script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+const slideCounter=document.getElementById('slideCounter');
+function updateControls(){
+  if(slideCounter) slideCounter.innerText=(i+1)+" / "+slides.length;
+  if(prevBtn) prevBtn.disabled=(i===0);
+  if(nextBtn) nextBtn.disabled=(i===slides.length-1);
+}
+function show(n){
+  if(n<0||n>=slides.length)return;
+  slides[i].classList.remove('active');
+  i=n;
+  slides[i].classList.add('active');
+  updateControls();
+}
+function next(){show(i+1)} function prev(){show(i-1)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')next(); if(e.key==='ArrowLeft'||e.key==='PageUp')prev();});
+updateControls();
+</script>
+</body>
+
+</html>
