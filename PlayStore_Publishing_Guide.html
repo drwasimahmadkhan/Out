@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Guide: Publishing Android Apps on Google Play Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --secondary: #004E89;
+            --accent: #1FA600;
+            --warning: #F7B801;
+            --danger: #E63946;
+            --light: #F8F9FA;
+            --dark: #1A202C;
+            --text: #2D3748;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: var(--light);
+            border-top: 5px solid var(--primary);
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box .number {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .table-of-contents {
+            padding: 40px;
+            background: white;
+        }
+
+        .table-of-contents h2 {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toc-item {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--light), white);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .toc-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .toc-item a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc-item a::before {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .toc-item:hover a::before {
+            transform: translateX(5px);
+        }
+
+        main {
+            padding: 50px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 100px;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--primary);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        p, li {
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            border-bottom-color: var(--primary);
+            opacity: 0.8;
+        }
+
+        .official-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #E8F5E9;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border-left: 3px solid var(--accent);
+        }
+
+        .official-link::before {
+            content: '🔗';
+            font-size: 1.1em;
+        }
+
+        .info-box, .warning-box, .success-box, .faq-box {
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            border-left: 5px solid;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border-left-color: #1976D2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border-left-color: var(--warning);
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border-left-color: var(--accent);
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            border-left-color: var(--danger);
+        }
+
+        .faq-box {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            border-left-color: #7B1FA2;
+        }
+
+        .info-box strong, .warning-box strong, .success-box strong, .danger-box strong, .faq-box strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        code {
+            background: #1E1E1E;
+            color: #CE9178;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            border-left: 4px solid var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--light);
+            font-size: 0.95em;
+        }
+
+        table tr:hover {
+            background: var(--light);
+            transition: all 0.3s ease;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin: 25px 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .step-list li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .step-list li p {
+            margin-top: 8px;
+            color: var(--text);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--light);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-item {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .comparison-item h4 {
+            color: var(--secondary);
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--secondary) 0%, #00263B 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question::after {
+            content: '▼';
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-question::after {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 25px;
+            max-height: 1000px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #F7B801 0%, #FF6B35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin: 0 5px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 50px 20px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            main {
+                padding: 25px 20px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h3 {
+                font-size: 1.1em;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .jump-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin: 10px 10px 10px 0;
+        }
+
+        .jump-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 Publish Your Android App</h1>
+
+        </header>
+
+        <div class="quick-stats">
+            <div class="stat-box">
+                <div class="number">3 Billion+</div>
+                <div class="label">Active Android Users Worldwide</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">$25</div>
+                <div class="label">One-Time Registration Fee</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">24-48 Hours</div>
+                <div class="label">Average App Review Time</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">∞</div>
+                <div class="label">Unlimited Apps (After Registration)</div>
+            </div>
+        </div>
+
+        <div class="table-of-contents">
+            <h2>📑 Quick Navigation</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#section1">Prerequisites & Setup</a></div>
+                <div class="toc-item"><a href="#section2">Developer Account</a></div>
+                <div class="toc-item"><a href="#section3">App Preparation</a></div>
+                <div class="toc-item"><a href="#section4">Signing Your App</a></div>
+                <div class="toc-item"><a href="#section5">Building Release</a></div>
+                <div class="toc-item"><a href="#section6">App Listing</a></div>
+                <div class="toc-item"><a href="#section7">Content Rating</a></div>
+                <div class="toc-item"><a href="#section8">Privacy Policy</a></div>
+                <div class="toc-item"><a href="#section9">Pricing & Payment</a></div>
+                <div class="toc-item"><a href="#section10">Publishing</a></div>
+                <div class="toc-item"><a href="#section11">Pakistan Guide</a></div>
+                <div class="toc-item"><a href="#faqs">FAQs</a></div>
+            </div>
+        </div>
+
+        <main>
+            <!-- Section 1 -->
+            <section id="section1">
+                <h2><span class="section-icon">✓</span>Prerequisites & Requirements</h2>
+
+                <h3>What You'll Need Before Starting</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Software</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Android Studio (Latest)</li>
+                            <li>Java Development Kit 8+</li>
+                            <li>Android SDK Tools</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Accounts & Payments</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Google Account (Gmail)</li>
+                            <li>Credit/Debit Card</li>
+                            <li>$25 Registration Fee</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>App Requirements</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Minimum API 21+</li>
+                            <li>Fully tested app</li>
+                            <li>Privacy policy</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Technical Requirements Checklist</h3>
+                <div class="info-box">
+                    <strong>Ensure Your App Has:</strong>
+                    <ul style="margin-top: 15px; margin-left: 20px;">
+                        <li>✓ Unique package name (e.g., com.yourcompany.appname)</li>
+                        <li>✓ Correct version code and version name</li>
+                        <li>✓ 512x512 PNG app icon with transparency</li>
+                        <li>✓ 2-8 high-quality screenshots (1080x1920 px)</li>
+                        <li>✓ Complete, error-free code without crashes</li>
+                        <li>✓ All permissions justified and necessary</li>
+                        <li>✓ No hardcoded test credentials or debug data</li>
+                        <li>✓ Privacy policy (if collecting any user data)</li>
+                    </ul>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://developer.android.com/distribute/best-practices/launch" target="_blank" class="official-link">Android App Launch Checklist</a></p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="section2">
+                <h2><span class="section-icon">🚀</span>Set Up Your Google Play Developer Account</h2>
+
+                <h3>Creating Your Developer Account</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Visit Google Play Console</strong>
+                        <p>Go to <a href="https://play.google.com/console" target="_blank" class="official-link">https://play.google.com/console</a></p>
+                    </li>
+                    <li>
+                        <strong>Sign In with Google Account</strong>
+                        <p>Use your existing Gmail account or create a new one. You can use business or personal email.</p>
+                    </li>
+                    <li>
+                        <strong>Accept Developer Agreement</strong>
+                        <p>Read and accept the <a href="https://play.google.com/intl/en/about/developer-content-policy/" target="_blank" class="official-link">Google Play Developer Program Policies</a> carefully.</p>
+                    </li>
+                    <li>
+                        <strong>Provide Account Information</strong>
+                        <p>Fill in your developer name, email, phone number, and address. This can be personal or business information.</p>
+                    </li>
+                    <li>
+                        <strong>Pay Registration Fee ($25)</strong>
+                        <p>Add a valid payment method and pay the one-time $25 USD registration fee. <span class="highlight">This fee is non-refundable but covers unlimited apps.</span></p>
+                    </li>
+                    <li>
+                        <strong>Account Verification</strong>
+                        <p>Wait for Google to verify your account. This typically takes 24-48 hours. Check your email for updates.</p>
+                    </li>
+                </ol>
+
+                <div class="success-box">
+                    <strong>✓ Your Account Is Ready When:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>You can access Google Play Console</li>
+                        <li>You can create a new app</li>
+                        <li>You have full access to all sections</li>
+                    </ul>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/6112435" target="_blank" class="official-link">Create a Google Play Developer Account</a></p>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="section3">
+                <h2><span class="section-icon">🔧</span>Prepare Your Application</h2>
+
+                <h3>Pre-Publishing Code Review</h3>
+                <div class="warning-box">
+                    <strong>⚠️ Critical Checklist:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Test thoroughly on minimum 3 different Android versions</li>
+                        <li>Remove ALL debugging code, Log.d() statements, and test data</li>
+                        <li>Remove hardcoded API keys, passwords, test URLs, or credentials</li>
+                        <li>Test for crashes and force closes on multiple devices</li>
+                        <li>Verify all features work exactly as described</li>
+                        <li>Check battery and data usage is reasonable</li>
+                        <li>Test on both phones and tablets</li>
+                        <li>Ensure no external links to competing app stores</li>
+                    </ul>
+                </div>
+
+                <h3>Update AndroidManifest.xml Properly</h3>
+                <p>Ensure these critical fields are configured correctly:</p>
+                <div class="code-block">
+&lt;manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myapp"&gt;
+
+    &lt;uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="34" /&gt;
+
+    &lt;application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"&gt;
+        ...
+    &lt;/application&gt;
+&lt;/manifest&gt;
+                </div>
+
+                <h3>Required Visual Assets</h3>
+                <table>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Dimensions</th>
+                        <th>Format</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>App Icon</strong></td>
+                        <td>512 × 512 px</td>
+                        <td>PNG (32-bit with alpha)</td>
+                        <td>Displayed in Play Store</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Feature Graphic</strong></td>
+                        <td>1024 × 500 px</td>
+                        <td>PNG/JPG</td>
+                        <td>Featured apps section</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Screenshots (Phone)</strong></td>
+                        <td>1080 × 1920 px</td>
+                        <td>PNG/JPG</td>
+                        <td>App showcase (2-8 recommended)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Screenshots (Tablet)</strong></td>
+                        <td>1440 × 2560 px</td>
+                        <td>PNG/JPG</td>
+                        <td>If your app supports tablets</td>
+                    </tr>
+                </table>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/1078870" target="_blank" class="official-link">Store Listing Graphics and Screenshots</a></p>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="section4">
+                <h2><span class="section-icon">🔐</span>Generate Your App Signing Key</h2>
+
+                <div class="danger-box">
+                    <strong>⚠️ CRITICAL - Save Your Keystore!</strong>
+                    <p>You'll need your keystore file forever to update your app. Losing it means you can never update your published app. Store it safely with backups in at least 2 locations!</p>
+                </div>
+
+                <h3>Generate Keystore Using Android Studio</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Open Your Project in Android Studio</strong>
+                        <p>Launch Android Studio and open your app project.</p>
+                    </li>
+                    <li>
+                        <strong>Navigate to Key Generation</strong>
+                        <p>Click <code>Build</code> → <code>Generate Signed Bundle/APK</code></p>
+                    </li>
+                    <li>
+                        <strong>Choose Android App Bundle</strong>
+                        <p>Select <span class="highlight">Android App Bundle (AAB)</span> - this is what Google Play now requires for new apps.</p>
+                    </li>
+                    <li>
+                        <strong>Create New Keystore</strong>
+                        <p>Click the "Create new..." button to generate your keystore.</p>
+                    </li>
+                    <li>
+                        <strong>Set Keystore Path</strong>
+                        <p>Choose where to save your keystore file (e.g., <code>C:\dev\my-release-key.keystore</code> or <code>/Users/you/dev/my-key.keystore</code>). Make backups!</p>
+                    </li>
+                    <li>
+                        <strong>Fill Key Information Carefully</strong>
+                        <p>Enter all details exactly as shown below. You'll need these passwords forever.</p>
+                    </li>
+                    <li>
+                        <strong>Set Validity to 25+ Years</strong>
+                        <p>This ensures your key works for the app's entire lifetime.</p>
+                    </li>
+                </ol>
+
+                <h3>Keystore Information Guide</h3>
+                <table>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                        <th>Requirements</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Key Store Password</strong></td>
+                        <td>SecurePass123!</td>
+                        <td>Minimum 6 characters, use strong password</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Key Alias</strong></td>
+                        <td>my-release-key</td>
+                        <td>Name for your key (no special characters)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Key Password</strong></td>
+                        <td>KeyPass456!</td>
+                        <td>Can be same as keystore password or different</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Validity Years</strong></td>
+                        <td>25</td>
+                        <td>Minimum 25 years recommended</td>
+                    </tr>
+                    <tr>
+                        <td><strong>First and Last Name</strong></td>
+                        <td>John Developer</td>
+                        <td>Your name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Organization</strong></td>
+                        <td>My Company</td>
+                        <td>Company or personal name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>City</strong></td>
+                        <td>Karachi</td>
+                        <td>Your city</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Country Code</strong></td>
+                        <td>PK</td>
+                        <td>2-letter country code (PK for Pakistan)</td>
+                    </tr>
+                </table>
+
+                <div class="success-box">
+                    <strong>✓ Keystore Successfully Created</strong>
+                    <p>Your keystore file is now ready. Click "OK" to complete the process.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>📝 Save This Information:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Keystore file path and filename</li>
+                        <li>Keystore password</li>
+                        <li>Key alias name</li>
+                        <li>Key password</li>
+                        <li>Store this in a password manager or secure location</li>
+                    </ul>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://developer.android.com/studio/publish/app-signing" target="_blank" class="official-link">Android App Signing Guide</a></p>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="section5">
+                <h2><span class="section-icon">📦</span>Build Your Release APK/Bundle</h2>
+
+                <h3>Build Android App Bundle (Recommended)</h3>
+                <p><span class="highlight">Google Play now requires Android App Bundle (AAB) for all new apps.</span> This format allows Google to generate optimized APKs for each device configuration.</p>
+
+                <ol class="step-list">
+                    <li>
+                        <strong>Open Build Menu in Android Studio</strong>
+                        <p>Click <code>Build</code> → <code>Generate Signed Bundle/APK</code></p>
+                    </li>
+                    <li>
+                        <strong>Select "Android App Bundle"</strong>
+                        <p>Choose the radio button for Android App Bundle (not APK)</p>
+                    </li>
+                    <li>
+                        <strong>Select Your Keystore</strong>
+                        <p>Browse and select the keystore file you created in Section 4</p>
+                    </li>
+                    <li>
+                        <strong>Enter Both Passwords</strong>
+                        <p>Type your keystore password and key password exactly as you set them</p>
+                    </li>
+                    <li>
+                        <strong>Choose "release" Build Variant</strong>
+                        <p>Select "release" variant with optimization enabled (not debug)</p>
+                    </li>
+                    <li>
+                        <strong>Start the Build</strong>
+                        <p>Click "Finish" and wait. This may take 2-5 minutes depending on your app size.</p>
+                    </li>
+                    <li>
+                        <strong>Locate Your File</strong>
+                        <p>Your signed AAB file is saved to <code>app/release/app-release.aab</code> by default</p>
+                    </li>
+                </ol>
+
+                <div class="success-box">
+                    <strong>✓ Build Complete!</strong>
+                    <p>Your signed AAB file is ready. File size should typically be under 100 MB. If it's larger, check for unnecessary resources.</p>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://developer.android.com/guide/app-bundle" target="_blank" class="official-link">Android App Bundle Official Guide</a></p>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="section6">
+                <h2><span class="section-icon">📝</span>Create Your App Listing</h2>
+
+                <h3>Step 1: Create New App in Play Console</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Open Google Play Console</strong>
+                        <p>Go to <a href="https://play.google.com/console" target="_blank" class="official-link">https://play.google.com/console</a></p>
+                    </li>
+                    <li>
+                        <strong>Click "Create app" Button</strong>
+                        <p>Look for the blue "Create app" button at the top of the page</p>
+                    </li>
+                    <li>
+                        <strong>Fill in Basic Information</strong>
+                        <p>Enter:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>App name</strong> - Your app's name as shown in the store</li>
+                            <li><strong>Default language</strong> - Usually English</li>
+                            <li><strong>App category</strong> - Games, Productivity, Social, etc.</li>
+                            <li><strong>App type</strong> - Free or Paid</li>
+                            <li><strong>Adult content declaration</strong> - Select appropriately</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Accept Terms and Create</strong>
+                        <p>Check all required checkboxes and click "Create app"</p>
+                    </li>
+                </ol>
+
+                <h3>Step 2: Complete Store Listing</h3>
+                <p>Navigate to <code>Store presence → Main store listing</code> and fill all these fields:</p>
+                <table>
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                        <th>Max Length</th>
+                    </tr>
+                    <tr>
+                        <td><strong>App Name</strong></td>
+                        <td>Your app's display name</td>
+                        <td>50 characters</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Short Description</strong></td>
+                        <td>One-line overview of your app</td>
+                        <td>80 characters</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Full Description</strong></td>
+                        <td>Detailed features and benefits. Mention why users need it.</td>
+                        <td>4000 characters</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Screenshots</strong></td>
+                        <td>Show key features in action (2-8 images)</td>
+                        <td>1080×1920 px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Feature Graphic</strong></td>
+                        <td>Banner image shown in Featured apps section</td>
+                        <td>1024×500 px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>App Icon</strong></td>
+                        <td>Your app's icon</td>
+                        <td>512×512 px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Category</strong></td>
+                        <td>Primary category of your app</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Content Rating</strong></td>
+                        <td>Set via IARC questionnaire</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+
+                <h3>Pro Tips for Descriptions</h3>
+                <div class="info-box">
+                    <strong>✓ Write Descriptions That Convert:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Focus on <span class="highlight">benefits to users</span>, not just technical features</li>
+                        <li>Use clear, simple language - avoid technical jargon</li>
+                        <li>Highlight your app's unique value proposition in the first 2 lines</li>
+                        <li>Use bullet points to list key features</li>
+                        <li>Include call-to-action ("Download now", "Try free", etc.)</li>
+                        <li>Mention if app requires internet, special permissions, or in-app purchases</li>
+                        <li>Translate into multiple languages for global audience</li>
+                        <li>Be honest - don't claim features your app doesn't have</li>
+                    </ul>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/9859673" target="_blank" class="official-link">Create or Edit App Listings</a></p>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="section7">
+                <h2><span class="section-icon">⭐</span>Content Rating Questionnaire</h2>
+
+                <h3>Complete the IARC Questionnaire</h3>
+                <p>The <span class="highlight">International Age Rating Coalition (IARC)</span> questionnaire determines your app's age rating for different countries.</p>
+
+                <ol class="step-list">
+                    <li>
+                        <strong>Go to App Content Section</strong>
+                        <p>In Google Play Console, navigate to <code>App content → Target audience and content</code></p>
+                    </li>
+                    <li>
+                        <strong>Click "Go to IARC Rating Center"</strong>
+                        <p>You'll be redirected to the IARC website to complete the questionnaire</p>
+                    </li>
+                    <li>
+                        <strong>Answer Content Questions Honestly</strong>
+                        <p>Answer about your app's content:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li>Violence or harmful content</li>
+                            <li>Sexual content or nudity</li>
+                            <li>Profanity or strong language</li>
+                            <li>Alcohol, tobacco, or drug references</li>
+                            <li>In-app purchases or paid features</li>
+                            <li>Advertisements or marketing</li>
+                            <li>User data collection</li>
+                            <li>Social features and interaction</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Receive Your Ratings</strong>
+                        <p>You'll get ratings for: Google Play, ESRB, IARC, PEGI, ClassInd (Brazil), USK (Germany), etc.</p>
+                    </li>
+                    <li>
+                        <strong>Ratings Are Auto-Applied</strong>
+                        <p>Your Play Store listing automatically gets the appropriate age rating badge</p>
+                    </li>
+                </ol>
+
+                <h3>Rating Categories You'll Receive</h3>
+                <table>
+                    <tr>
+                        <th>Rating System</th>
+                        <th>Region</th>
+                        <th>Example Rating</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Google Play</strong></td>
+                        <td>Global</td>
+                        <td>Everyone, Teen, Mature, Adults Only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ESRB</strong></td>
+                        <td>USA/Canada</td>
+                        <td>E, E10+, T, M, AO</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PEGI</strong></td>
+                        <td>Europe</td>
+                        <td>3, 7, 12, 16, 18</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ClassInd</strong></td>
+                        <td>Brazil</td>
+                        <td>L, 10, 12, 14, 16, 18</td>
+                    </tr>
+                </table>
+
+                <div class="danger-box">
+                    <strong>⚠️ Important:</strong>
+                    <p>Answer the questionnaire <span class="highlight">completely and honestly</span>. False declarations can result in app removal and account suspension. Google takes content ratings very seriously.</p>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/188189" target="_blank" class="official-link">IARC Ratings and Compliance</a></p>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="section8">
+                <h2><span class="section-icon">📋</span>Privacy Policy & Permissions</h2>
+
+                <h3>Do You Need a Privacy Policy?</h3>
+                <div class="success-box">
+                    <strong>✓ Required If Your App:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Requests ANY permissions (location, camera, contacts, microphone, etc.)</li>
+                        <li>Collects personal information (email, phone, user data)</li>
+                        <li>Has in-app advertising or analytics</li>
+                        <li>Uses third-party services (Google Analytics, Firebase, etc.)</li>
+                        <li>Uses cloud storage or backend services</li>
+                        <li>Even if you don't actively collect data - if you request permissions, you need it</li>
+                    </ul>
+                </div>
+
+                <h3>How to Create & Add a Privacy Policy</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Create Your Privacy Policy</strong>
+                        <p>Options:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li>Write your own from scratch (comprehensive but time-consuming)</li>
+                            <li>Use free template generators: <a href="https://termly.io" target="_blank">Termly.io</a>, <a href="https://iubenda.com" target="_blank">iubenda.com</a>, <a href="https://privacypolicies.com" target="_blank">privacypolicies.com</a></li>
+                            <li>Hire a lawyer to write one (most expensive but safest)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Host It Online</strong>
+                        <p>Upload your privacy policy to:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li>Your website</li>
+                            <li>GitHub (create a public README.md)</li>
+                            <li>Free hosting like Vercel or Netlify</li>
+                            <li>Google Docs (make public, get shareable link)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Add URL to Play Console</strong>
+                        <p>Go to <code>Store presence → Store listing</code> and paste the direct URL to your privacy policy</p>
+                    </li>
+                </ol>
+
+                <h3>Required App Permissions Declaration</h3>
+                <p>Declare all permissions your app uses in the Play Console. Under each permission, explain WHY you need it:</p>
+                <table>
+                    <tr>
+                        <th>Permission</th>
+                        <th>Why You Might Need It</th>
+                        <th>How to Request</th>
+                    </tr>
+                    <tr>
+                        <td>Location (GPS)</td>
+                        <td>Map apps, location-based services</td>
+                        <td>Request at runtime (Android 6.0+)</td>
+                    </tr>
+                    <tr>
+                        <td>Camera</td>
+                        <td>Photo/video apps, video calls</td>
+                        <td>Request at runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Contacts</td>
+                        <td>Messaging, social apps</td>
+                        <td>Request at runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Microphone</td>
+                        <td>Voice calls, recording apps</td>
+                        <td>Request at runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>File management, photo apps</td>
+                        <td>Request at runtime</td>
+                    </tr>
+                    <tr>
+                        <td>Calendar</td>
+                        <td>Calendar apps, scheduling</td>
+                        <td>Request at runtime</td>
+                    </tr>
+                </table>
+
+                <div class="warning-box">
+                    <strong>⚠️ Permission Best Practices:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Only request permissions when user performs the related action</li>
+                        <li>Explain to user why you need each permission</li>
+                        <li>Don't request all permissions at app startup</li>
+                        <li>Respect user's permission decisions and don't force them</li>
+                        <li>If permission is denied, still let app function partially</li>
+                        <li>Use Runtime Permissions for Android 6.0+ (API 23+)</li>
+                    </ul>
+                </div>
+
+                <p><strong>Official References:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/9888170" target="_blank" class="official-link">Privacy Policy Requirements</a> | <a href="https://developer.android.com/training/permissions" target="_blank" class="official-link">Android Permissions Guide</a></p>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="section9">
+                <h2><span class="section-icon">💰</span>Pricing, Payment & Distribution</h2>
+
+                <h3>Registration Fee & Unlimited Apps</h3>
+                <div class="info-box">
+                    <strong>One-Time $25 Registration Fee Covers:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>✓ <span class="highlight">Unlimited app uploads</span> - You can publish as many apps as you want</li>
+                        <li>✓ Lifetime access to Google Play Console</li>
+                        <li>✓ No annual renewal fees</li>
+                        <li>✓ No limits on how many APKs/bundles you upload</li>
+                        <li>✓ Covers all types: free, paid, and apps with in-app purchases</li>
+                    </ul>
+                </div>
+
+                <h3>Set Your App Price (Free vs Paid)</h3>
+                <div class="comparison-table">
+                    <div class="comparison-item">
+                        <h4>💚 Free App</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Anyone can download</li>
+                            <li>Can have in-app purchases</li>
+                            <li>Can display ads</li>
+                            <li>Higher download volume</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>💳 Paid App</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Users pay upfront to download</li>
+                            <li>You get 70% of revenue</li>
+                            <li>Google takes 30% commission</li>
+                            <li>Lower downloads but committed users</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Pricing Tiers for Paid Apps</h3>
+                <table>
+                    <tr>
+                        <th>Tier</th>
+                        <th>USD Price</th>
+                        <th>Your Revenue (70%)</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td>Tier 1</td>
+                        <td>$0.99</td>
+                        <td>~$0.70</td>
+                        <td>Entry-level, high downloads</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 2</td>
+                        <td>$1.99</td>
+                        <td>~$1.39</td>
+                        <td>Utility apps, small games</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 3</td>
+                        <td>$2.99</td>
+                        <td>~$2.09</td>
+                        <td>Productivity apps</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 5</td>
+                        <td>$4.99</td>
+                        <td>~$3.49</td>
+                        <td>Advanced features</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 10</td>
+                        <td>$9.99</td>
+                        <td>~$6.99</td>
+                        <td>Premium apps</td>
+                    </tr>
+                    <tr>
+                        <td>Custom</td>
+                        <td>$0.99 - $2000</td>
+                        <td>70%</td>
+                        <td>Any price you choose</td>
+                    </tr>
+                </table>
+
+                <h3>Setting Distribution for Your App</h3>
+                <p>Navigate to <code>Pricing and distribution</code> section:</p>
+                <ul>
+                    <li><strong>Countries/Regions:</strong> Select where your app is available. Choose all or specific countries.</li>
+                    <li><strong>Device Types:</strong> Phone, Tablet, Wear OS, TV, etc.</li>
+                    <li><strong>Target Devices:</strong> Specify minimum screen size, RAM requirements, etc.</li>
+                    <li><strong>Auto-Update:</strong> Allow/disallow auto-updates in user settings</li>
+                </ul>
+
+                <h3>In-App Purchases (Optional)</h3>
+                <p>If your free app has premium features:</p>
+                <ul>
+                    <li>Create subscription plans and product listings</li>
+                    <li>Set pricing and renewal periods</li>
+                    <li>Implement billing in your app code using Google Play Billing Library</li>
+                    <li>Test purchases before publishing</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>✓ Revenue Share:</strong>
+                    <p>Google takes 30% commission. You receive 70% of all sales and in-app purchases. Payments are sent monthly to your bank account.</p>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/6334373" target="_blank" class="official-link">Pricing & Distribution Guide</a></p>
+            </section>
+
+            <!-- Section 10 -->
+            <section id="section10">
+                <h2><span class="section-icon">🚀</span>Upload & Submit for Publishing</h2>
+
+                <h3>Upload Your App Build</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Navigate to Release Section</strong>
+                        <p>In Play Console, go to <code>Release → Production</code></p>
+                    </li>
+                    <li>
+                        <strong>Click "Create New Release"</strong>
+                        <p>Click the blue button to start a new release</p>
+                    </li>
+                    <li>
+                        <strong>Upload Your AAB File</strong>
+                        <p>Click "Browse files" and select your signed <code>app-release.aab</code> file from Section 5</p>
+                    </li>
+                    <li>
+                        <strong>Wait for Validation</strong>
+                        <p>Google scans your app for security and compatibility issues (usually 1-2 minutes)</p>
+                    </li>
+                    <li>
+                        <strong>Review Pre-Launch Report</strong>
+                        <p>Google provides security scan results, performance metrics, and any warnings</p>
+                    </li>
+                    <li>
+                        <strong>Add Release Notes</strong>
+                        <p>Describe what's new in this version (e.g., "First release! Bug fixes and improvements")</p>
+                    </li>
+                    <li>
+                        <strong>Click "Review Release"</strong>
+                        <p>Final review of your release before submission</p>
+                    </li>
+                </ol>
+
+                <h3>Pre-Launch Security Report</h3>
+                <p>After uploading, Google generates a comprehensive pre-launch report:</p>
+                <table>
+                    <tr>
+                        <th>Check</th>
+                        <th>What It Looks For</th>
+                        <th>Action If Failed</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Scan</strong></td>
+                        <td>Malware, malicious code</td>
+                        <td>Fix security issues before publishing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compatibility</strong></td>
+                        <td>Works on different devices/Android versions</td>
+                        <td>Fix crashes, test thoroughly</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>App size, memory usage, battery drain</td>
+                        <td>Optimize if issues found</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Permissions</strong></td>
+                        <td>Justification for dangerous permissions</td>
+                        <td>Declare or remove unnecessary permissions</td>
+                    </tr>
+                </table>
+
+                <h3>Final Pre-Publishing Checklist</h3>
+                <div class="success-box">
+                    <strong>✓ Before Clicking Submit, Verify:</strong>
+                    <ul style="margin-top: 15px; margin-left: 20px;">
+                        <li>☐ All store listing information is complete and accurate</li>
+                        <li>☐ Screenshots are high quality and show key features</li>
+                        <li>☐ App icon is 512×512 PNG with transparency</li>
+                        <li>☐ Description doesn't have typos or grammatical errors</li>
+                        <li>☐ Privacy policy is provided (if needed)</li>
+                        <li>☐ Content rating questionnaire completed</li>
+                        <li>☐ Pricing and distribution configured correctly</li>
+                        <li>☐ Your app has been tested thoroughly</li>
+                        <li>☐ No crashes or ANRs found</li>
+                        <li>☐ Pre-launch report shows no major errors</li>
+                        <li>☐ No external links to competing app stores</li>
+                        <li>☐ Contact information provided</li>
+                    </ul>
+                </div>
+
+                <h3>Submit for Review</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Final Review</strong>
+                        <p>Review all your information one last time for errors</p>
+                    </li>
+                    <li>
+                        <strong>Click "Start Rollout to Production"</strong>
+                        <p>This submits your app for Google's manual review</p>
+                    </li>
+                    <li>
+                        <strong>Confirm Rollout</strong>
+                        <p>Click "Rollout" button to confirm submission</p>
+                    </li>
+                    <li>
+                        <strong>App is Under Review</strong>
+                        <p>Your app enters the review queue. Status changes to "Under Review"</p>
+                    </li>
+                </ol>
+
+                <div class="info-box">
+                    <strong>📊 Review Timeline:</strong>
+                    <table style="width: 100%; margin-top: 15px;">
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td><strong>Time</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Under Review</td>
+                            <td>Usually 24-48 hours (sometimes faster)</td>
+                        </tr>
+                        <tr>
+                            <td>Approved/Rejected</td>
+                            <td>Decision emailed immediately after review</td>
+                        </tr>
+                        <tr>
+                            <td>Publishing (if approved)</td>
+                            <td>A few hours to deploy globally</td>
+                        </tr>
+                        <tr>
+                            <td>Live on Play Store</td>
+                            <td>Fully available to all users</td>
+                        </tr>
+                    </table>
+                </table>
+
+                <div class="success-box">
+                    <strong>✓ Congratulations!</strong>
+                    <p>Your app is now in the review queue. You'll receive an email with the decision within 24-48 hours. Check your email inbox and spam folder!</p>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/113476" target="_blank" class="official-link">Upload and publish your app</a></p>
+            </section>
+
+            <!-- Section 11 - Pakistan Guide -->
+            <section id="section11">
+                <h2><span class="section-icon">🇵🇰</span>Pakistan-Specific Guide</h2>
+
+                <h3>Can I Publish Apps from Pakistan?</h3>
+                <div class="success-box">
+                    <strong>✓ YES! Pakistan has NO restrictions on publishing apps.</strong>
+                    <p>Developers from Pakistan can freely publish apps on Google Play Store. There are no country-specific blocks or limitations for Pakistani developers.</p>
+                </div>
+
+                <h3>Payment Methods for Pakistani Developers</h3>
+                <p><strong>Important:</strong> Receiving payments IN Pakistan can be challenging. Here are your options:</p>
+
+                <table>
+                    <tr>
+                        <th>Payment Method</th>
+                        <th>How It Works</th>
+                        <th>Pros</th>
+                        <th>Cons</th>
+                    </tr>
+                    <tr>
+                        <td><strong>International Bank Account</strong></td>
+                        <td>Direct wire transfer from Google</td>
+                        <td>Fast, direct, official</td>
+                        <td>Not all Pakistani banks supported. Need IBAN/SWIFT.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PayPal</strong></td>
+                        <td>Withdraw to PayPal account, then to bank</td>
+                        <td>Works in Pakistan, flexible</td>
+                        <td>Multiple conversion fees, takes longer</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wise/Transferwise</strong></td>
+                        <td>Transfer internationally with lower fees</td>
+                        <td>Better exchange rates, lower fees</td>
+                        <td>Requires US/EUR account to receive funds first</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Freelance Account</strong></td>
+                        <td>Link Google to Upwork/Fiverr, withdraw to bank</td>
+                        <td>Easy setup, reliable</td>
+                        <td>Extra fees, slow process</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HBL/Allied Bank</strong></td>
+                        <td>Some Pakistani banks support IBAN transfers</td>
+                        <td>Direct to local bank</td>
+                        <td>Limited, requires IBAN setup</td>
+                    </tr>
+                </table>
+
+                <h3>Step-by-Step Payment Setup (Pakistan)</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Register with Google Play Console</strong>
+                        <p>Use your Gmail account. Provide your actual name and address (can be personal).</p>
+                    </li>
+                    <li>
+                        <strong>Add Payment Method for $25 Fee</strong>
+                        <p>Use your Pakistani Visa/Mastercard (most banks issue these). Your card needs international approval.</p>
+                    </li>
+                    <li>
+                        <strong>Add Payout Method (Very Important)</strong>
+                        <p>Go to <code>Settings → Payout methods</code> and add:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>Option A:</strong> Your Pakistani bank account IBAN (if your bank supports it)</li>
+                            <li><strong>Option B:</strong> PayPal account linked to Pakistani bank</li>
+                            <li><strong>Option C:</strong> Wise account (formerly TransferWise)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Fill Tax Information</strong>
+                        <p>Google requires W-8BEN form (for non-US individuals). You'll fill this electronically.</p>
+                    </li>
+                    <li>
+                        <strong>Verify Your Information</strong>
+                        <p>Make sure your name, address, and payment details match exactly</p>
+                    </li>
+                    <li>
+                        <strong>Wait for Approval</strong>
+                        <p>Once your payout method is verified, you can receive payments (usually within 1-2 weeks)</p>
+                    </li>
+                </ol>
+
+                <h3>Pakistani Bank IBAN Setup</h3>
+                <p><strong>Check if your bank supports IBAN transfers:</strong></p>
+                <ul>
+                    <li><strong>HBL (Habib Bank Limited):</strong> Supports IBAN transfers to international accounts</li>
+                    <li><strong>NBP (National Bank of Pakistan):</strong> Supports IBAN for international transfers</li>
+                    <li><strong>Allied Bank:</strong> IBAN available for account holders</li>
+                    <li><strong>MCB Bank:</strong> IBAN-enabled accounts available</li>
+                    <li><strong>UBL (United Bank Limited):</strong> Supports IBAN transfers</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>How to Get Your IBAN:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>Visit your bank branch or mobile app</li>
+                        <li>Request IBAN for your account (they'll provide a certificate)</li>
+                        <li>IBAN format: PK + 2 digits + Bank Code + 16-digit account number</li>
+                        <li>Also get SWIFT code (usually BANK + country code)</li>
+                        <li>Keep both documents safe for Google Play submission</li>
+                    </ul>
+                </div>
+
+                <h3>PayPal Route (Easier for Many)</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Create PayPal Account in Pakistan</strong>
+                        <p>Go to <a href="https://www.paypal.com/pk" target="_blank">paypal.com/pk</a> and sign up</p>
+                    </li>
+                    <li>
+                        <strong>Link Your Pakistani Bank Account</strong>
+                        <p>Add your primary bank account to PayPal for withdrawals</p>
+                    </li>
+                    <li>
+                        <strong>Add PayPal to Google Play Console</strong>
+                        <p>In <code>Payout methods</code>, select PayPal and link your account</p>
+                    </li>
+                    <li>
+                        <strong>Receive Money</strong>
+                        <p>Google pays to PayPal → Withdraw to your Pakistani bank account</p>
+                    </li>
+                </ol>
+
+                <h3>Important Pakistani Developer Notes</h3>
+                <div class="warning-box">
+                    <strong>⚠️ Things to Know:</strong>
+                    <ul style="margin-top: 12px; margin-left: 20px;">
+                        <li>You need a <span class="highlight">Visa/Mastercard with international access</span> to pay the $25 registration fee</li>
+                        <li><span class="highlight">USD to PKR conversion rates</span> mean your payout value changes monthly</li>
+                        <li><span class="highlight">Bank transfers to Pakistan</span> can take 5-10 business days</li>
+                        <li>Some international payment gateways have restrictions - test before signing up</li>
+                        <li>Consider <span class="highlight">VAT/GST implications</span> when reporting app income (consult accountant)</li>
+                        <li>Google may conduct <span class="highlight">additional verification</span> for Pakistani accounts</li>
+                        <li>Keep records of all payouts for tax purposes</li>
+                    </ul>
+                </div>
+
+                <h3>Popular Payment Method in Pakistan</h3>
+                <div class="success-box">
+                    <strong>✓ Most Pakistani Developers Use:</strong>
+                    <p><span class="highlight">PayPal + Pakistani Bank Account</span> - This is the simplest and most reliable method. Most Pakistani banks support PayPal withdrawals.</p>
+                </div>
+
+                <p><strong>Official Reference:</strong> <a href="https://support.google.com/googleplay/android-developer/answer/10282073" target="_blank" class="official-link">Payments and Payouts Information</a></p>
+            </section>
+
+            <!-- FAQs Section -->
+            <section id="faqs">
+                <h2><span class="section-icon">❓</span>Frequently Asked Questions</h2>
+
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Can I upload unlimited apps after paying $25?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">YES, completely unlimited!</span> The $25 is a one-time registration fee. After paying it, you can upload as many apps as you want - 10, 100, or 1000 apps. No additional per-app fees. You can publish free apps, paid apps, apps with ads, apps with in-app purchases - all covered by the $25 registration.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">How long does app review take?</div>
+                        <div class="faq-answer">
+                            <p><strong>Average: 24-48 hours</strong> Google reviews most apps within 24-48 hours of submission. Sometimes it can be faster (a few hours) or slower (up to a week for controversial content). Your app status updates in real-time in the Play Console. You'll also get an email notification when the review completes.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What if my app gets rejected?</div>
+                        <div class="faq-answer">
+                            <p>If rejected, Google provides detailed explanation of what policy was violated. You have <strong>unlimited attempts to resubmit</strong>. Fix the issues and upload a new build. Common rejection reasons: crashes, misleading description, policy violations, or security issues. Read the feedback carefully and address each point.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I update my app after publishing?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">YES! You can update whenever you want.</span> Increment your version code and version name, rebuild your APK/Bundle, and upload the new build. It goes through the same review process (24-48 hours). Users can then update your app from the Play Store.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What if I lose my keystore file?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">This is a serious problem.</span> If you lose your keystore file, you can NEVER update that specific app. You'll have to unpublish it and create a new app with a new package name. This is why backing up your keystore is critical. Store it in at least 2 secure locations (external drive, password manager, cloud storage with encryption).</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I make my app free if it was paid before?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">NO, you cannot change from Paid to Free.</span> Once an app is published as Paid, it stays Paid. You cannot remove the price. Your options: (1) Keep it paid, (2) Unpublish and create a new free version with different package name, (3) Add free trial or lite version. Plan your pricing strategy before publishing!</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Do I need to test my app before publishing?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">Absolutely YES!</span> Test your app thoroughly on multiple devices and Android versions before submitting. Google provides <a href="https://play.google.com/console/about/internal-testing/" target="_blank">Internal Testing</a> and <a href="https://play.google.com/console/about/closed-testing/" target="_blank">Closed Testing</a> tracks where you can invite users to test before production release.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What's the difference between APK and AAB?</div>
+                        <div class="faq-answer">
+                            <p><strong>AAB (Android App Bundle):</strong> Google's recommended format. Google generates optimized APKs for each device. Smaller downloads, better compatibility. Required for new apps.
+                            <strong>APK (Android Package):</strong> Direct app file, same for all devices. Larger file size. Used for older apps or sideloading. Google Play now requires AAB for new submissions.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">How do I monitor my app's performance?</div>
+                        <div class="faq-answer">
+                            <p>Google Play Console provides <a href="https://support.google.com/googleplay/android-developer/answer/4407975" target="_blank">detailed analytics</a>: Downloads, installs, uninstalls, crashes, user reviews, ratings, and revenue. You can also integrate <a href="https://firebase.google.com" target="_blank">Firebase Analytics</a> for deeper insights into user behavior inside your app.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I publish apps from any country?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">YES! Google Play is open to developers worldwide</span> including Pakistan, India, Bangladesh, and all other countries. No restrictions on developer location. You just need a Google Account and valid payment method. Payments may require different setup by country (see Section 11 for Pakistan details).</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What's Google Play's policy on ads and monetization?</div>
+                        <div class="faq-answer">
+                            <p>Google allows ads in your app BUT: (1) Ads must not interfere with app functionality, (2) Disclose ad presence in privacy policy, (3) Follow <a href="https://policies.google.com/play" target="_blank">Google Play Policies</a>, (4) Use official Google Mobile Ads SDK for AdMob integration, (5) Don't click your own ads, (6) Don't encourage users to click ads repeatedly. Violating ad policies results in app removal.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">How long before I see my app on Play Store?</div>
+                        <div class="faq-answer">
+                            <p>Timeline: (1) Registration approval: 24-48 hours, (2) App review: 24-48 hours, (3) Publishing/deployment: Few hours. So typically 2-3 days from initial submission until your app appears in Play Store search results worldwide. During deployment, your app is available to some users but not all yet.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I see my app before publishing (beta testing)?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">YES! Use Testing Tracks:</span> 
+                            <ul style="margin: 10px 0 10px 20px;">
+                                <li><strong>Internal Testing:</strong> Invite up to 100 testers instantly</li>
+                                <li><strong>Closed Testing:</strong> Beta test with larger group</li>
+                                <li><strong>Open Testing:</strong> Public beta, anyone can join</li>
+                            </ul>
+                            These are completely free and appear separately from your production app. Testers use a special link to install the beta version.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What happens if I unpublish my app?</div>
+                        <div class="faq-answer">
+                            <p>When you unpublish an app: (1) It's removed from Play Store search, (2) Existing users can still use it and update it, (3) New users cannot find or download it, (4) Your app data and reviews are preserved, (5) You can republish it anytime. Your $25 registration fee stays active for other apps.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Is there a minimum or maximum app size?</div>
+                        <div class="faq-answer">
+                            <p><strong>Maximum:</strong> 100 MB for direct download (if you use APK). Larger apps require OBB expansion files. Using AAB (recommended), Google handles optimization so this is usually not an issue. <strong>Minimum:</strong> No minimum size, but app must be functional. Empty or near-empty apps get rejected as not meeting policy.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Do I need to pay taxes on app revenue?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">YES!</span> App revenue is taxable income. In Pakistan, you must report it to FBR (Federal Board of Revenue). Keep detailed records of all payouts. You may need to: (1) Register for income tax, (2) File annual returns, (3) Maintain payment receipts. Consult a Pakistani tax accountant for your specific situation.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I sell the same app multiple times?</div>
+                        <div class="faq-answer">
+                            <p><span class="highlight">NO - each app needs unique package name.</span> You cannot publish identical apps multiple times. However, you CAN: (1) Create variations with different features, (2) Create lite and pro versions, (3) Create country-specific versions. But core code must be different enough to justify separate apps.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What's the best strategy for first-time publishers?</div>
+                        <div class="faq-answer">
+                            <p><strong>Recommended Approach:</strong>
+                            <ol style="margin: 10px 0 10px 20px;">
+                                <li>Start with free app (higher downloads, build user base)</li>
+                                <li>Build good user reviews first</li>
+                                <li>Add premium version after establishing presence</li>
+                                <li>Use in-app ads for monetization initially</li>
+                                <li>Add in-app purchases for premium features</li>
+                                <li>Monitor user feedback and iterate quickly</li>
+                            </ol>
+                            Free apps are easier to get traction with. Revenue can come later.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Resources -->
+            <section>
+                <h2><span class="section-icon">📚</span>Official Resources & Links</h2>
+
+                <h3>Google Play Documentation</h3>
+                <ul>
+                    <li><a href="https://play.google.com/console" target="_blank" class="official-link">Google Play Console</a> - Main platform for publishing</li>
+                    <li><a href="https://developer.android.com/distribute" target="_blank" class="official-link">Android Distribution on Google Play</a> - Official guide</li>
+                    <li><a href="https://support.google.com/googleplay/android-developer" target="_blank" class="official-link">Google Play Help Center</a> - Support documentation</li>
+                    <li><a href="https://policies.google.com/play" target="_blank" class="official-link">Google Play Policies</a> - Rules and requirements</li>
+                </ul>
+
+                <h3>Android Development</h3>
+                <ul>
+                    <li><a href="https://developer.android.com" target="_blank" class="official-link">Android Developer</a> - Official documentation</li>
+                    <li><a href="https://developer.android.com/studio" target="_blank" class="official-link">Android Studio Download</a> - Development IDE</li>
+                    <li><a href="https://developer.android.com/training" target="_blank" class="official-link">Android Training</a> - Tutorials</li>
+                </ul>
+
+                <h3>Payment & Tax Information</h3>
+                <ul>
+                    <li><a href="https://support.google.com/googleplay/android-developer/answer/10282073" target="_blank" class="official-link">Google Play Payments & Payouts</a></li>
+                    <li><a href="https://www.irs.gov/forms/about-form-w-8ben" target="_blank" class="official-link">W-8BEN Tax Form</a> - For non-US developers</li>
+                    <li><a href="https://www.fbr.gov.pk" target="_blank" class="official-link">FBR Pakistan</a> - Tax authority</li>
+                </ul>
+
+                <h3>Testing & Analytics</h3>
+                <ul>
+                    <li><a href="https://firebase.google.com" target="_blank" class="official-link">Firebase</a> - Analytics, crashes, testing</li>
+                    <li><a href="https://developer.android.com/studio/test" target="_blank" class="official-link">Android Testing Guide</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>📱 Complete Android App Publishing Guide</strong></p>
+            <p>Comprehensive resource for developers publishing apps on Google Play Store</p>
+            <p>Including Pakistan-specific information for local developers</p>
+            <p style="margin-top: 20px; font-size: 0.85em;">Last Updated: April 2026 | All information current with latest Google Play requirements</p>
+        </footer>
+    </div>
+
+    <script>
+        // FAQ Accordion functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.querySelector('.faq-question').addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
